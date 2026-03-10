@@ -1,645 +1,629 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.4">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Sonos · External User Onboarding</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  :root {
+    --black:#111111;--white:#ffffff;--gray-50:#f8f8f6;--gray-100:#efefed;
+    --gray-200:#ddddd9;--gray-400:#9a9a94;--gray-600:#5a5a55;
+    --accent:#e8480a;--accent-soft:#fdf0eb;--green:#1a9e5c;--green-soft:#edfaf3;
+    --radius:10px;--shadow:0 2px 16px rgba(0,0,0,0.09);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',sans-serif;background:var(--gray-50);color:var(--black);min-height:100vh;}
+  header{background:var(--black);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;}
+  .logo-wrap{display:flex;align-items:center;gap:14px;}
+  .header-badge{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-400);border-left:1px solid #333;padding-left:14px;}
+  .okta-badge{display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px solid #2e2e2e;border-radius:6px;padding:6px 12px;font-size:12px;color:var(--gray-400);}
+  .okta-dot{width:7px;height:7px;border-radius:50%;background:#00d1b2;}
+  .hero{background:var(--black);padding:52px 40px 48px;border-bottom:1px solid #222;}
+  .hero h1{font-size:clamp(26px,4vw,40px);font-weight:300;color:var(--white);letter-spacing:-.02em;line-height:1.15;max-width:600px;}
+  .hero h1 strong{font-weight:700;color:var(--accent);}
+  .hero p{margin-top:12px;font-size:15px;color:var(--gray-400);max-width:520px;line-height:1.65;}
+  .hero-meta{display:flex;gap:28px;margin-top:28px;}
+  .hero-stat .n{font-size:28px;font-weight:700;color:var(--white);line-height:1;}
+  .hero-stat .l{font-size:11px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;}
+  .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:18px 40px;background:var(--white);border-bottom:1px solid var(--gray-200);position:sticky;top:64px;z-index:90;}
+  .search-wrap{position:relative;flex:1;min-width:200px;max-width:300px;}
+  .search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray-400);}
+  .search-input{width:100%;padding:8px 14px 8px 36px;border:1.5px solid var(--gray-200);border-radius:100px;font-size:13px;font-family:inherit;background:var(--gray-50);outline:none;color:var(--black);}
+  .search-input:focus{border-color:var(--black);background:var(--white);}
+  .search-input::placeholder{color:var(--gray-400);}
+  .divider-v{width:1px;height:28px;background:var(--gray-200);flex-shrink:0;}
+  .filter-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);white-space:nowrap;}
+  .filter-btn{padding:6px 14px;border-radius:100px;border:1.5px solid var(--gray-200);background:var(--white);font-size:12px;font-weight:500;cursor:pointer;color:var(--gray-600);font-family:inherit;transition:all .15s;}
+  .filter-btn.active{background:var(--black);color:var(--white);border-color:var(--black);}
+  .results-count{margin-left:auto;font-size:12px;color:var(--gray-400);font-weight:500;white-space:nowrap;}
+  .container{max-width:1200px;margin:0 auto;padding:36px 40px 80px;}
+  .section-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--gray-200);}
+  .divider{height:1px;background:var(--gray-200);margin:44px 0 32px;}
+  .roles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px;margin-bottom:52px;}
+  .role-card{background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:22px 24px;display:flex;flex-direction:column;gap:12px;transition:all .2s;}
+  .role-card:hover{border-color:#aaa;box-shadow:var(--shadow);}
+  .role-card.selected{border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,72,10,.1);}
+  .role-card.hidden{display:none;}
+  .role-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+  .profile-id{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-bottom:3px;}
+  .role-name{font-size:15px;font-weight:600;color:var(--black);}
+  .role-badge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;padding:3px 9px;border-radius:100px;white-space:nowrap;flex-shrink:0;}
+  .badge-eng{background:#eef3ff;color:#3a5bd9;}
+  .badge-mktg{background:#fff0f3;color:#d93a5b;}
+  .badge-ops{background:#f0faf5;color:#2a9d6e;}
+  .badge-sales{background:#fff8eb;color:#c47d10;}
+  .badge-design{background:#f5eeff;color:#7a3ad9;}
+  .badge-finance{background:#e8f9ff;color:#0a7fa0;}
+  .badge-hr{background:#fff0e8;color:#c45a10;}
+  .role-desc{font-size:13px;color:var(--gray-600);line-height:1.6;}
+  .app-chips{display:flex;flex-wrap:wrap;gap:7px;}
+  .app-chip{display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-100);border-radius:6px;padding:5px 10px;font-size:12px;font-weight:500;color:var(--gray-600);}
+  .app-chip img{width:15px;height:15px;object-fit:contain;border-radius:3px;}
+  .select-btn{width:100%;padding:9px;border-radius:7px;border:1.5px solid var(--gray-200);background:var(--gray-50);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--gray-600);transition:all .15s;margin-top:2px;}
+  .select-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+  .role-card.selected .select-btn{background:var(--accent);color:var(--white);border-color:var(--accent);}
+  .empty-state{display:none;grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray-400);}
+  .panel{background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;margin-bottom:32px;}
+  .panel.locked{opacity:.45;pointer-events:none;}
+  .panel-header{padding:16px 24px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;background:var(--gray-50);}
+  .panel-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .step-circle{width:22px;height:22px;border-radius:50%;background:var(--black);color:var(--white);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .panel-hint{font-size:12px;color:var(--gray-400);}
+  .panel-body{padding:24px;}
+  .profile-pill{display:none;align-items:center;gap:12px;background:var(--accent-soft);border:1px solid #f5c5aa;border-radius:8px;padding:10px 16px;margin-bottom:18px;}
+  .profile-pill.show{display:flex;}
+  .profile-pill-id{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);}
+  .profile-pill-name{font-size:13px;font-weight:600;color:var(--black);}
+  .pill-change{margin-left:auto;font-size:12px;color:var(--accent);cursor:pointer;font-weight:600;text-decoration:underline;}
+  .extra-apps-note{font-size:13px;color:var(--gray-600);margin-bottom:14px;line-height:1.6;}
+  .app-toggles{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+  .app-toggle{display:flex;align-items:center;gap:7px;padding:7px 13px;border-radius:8px;border:1.5px solid var(--gray-200);background:var(--white);font-size:13px;font-weight:500;cursor:pointer;color:var(--gray-600);font-family:inherit;user-select:none;transition:all .15s;}
+  .app-toggle:hover{border-color:var(--black);color:var(--black);}
+  .app-toggle.on{background:#eef3ff;border-color:#3a5bd9;color:#3a5bd9;}
+  .app-toggle.included{opacity:.35;cursor:not-allowed;}
+  .app-toggle img{width:16px;height:16px;object-fit:contain;border-radius:3px;}
+  .continue-btn{padding:9px 22px;background:var(--black);color:var(--white);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s;}
+  .continue-btn:hover{background:#333;}
+  .hire-label{font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+  .hire-sub{font-size:13px;color:var(--gray-400);margin-bottom:12px;line-height:1.6;}
+  .hire-row{display:flex;gap:10px;max-width:480px;margin-bottom:8px;}
+  .hire-input{flex:1;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;font-family:inherit;background:var(--gray-50);outline:none;color:var(--black);}
+  .hire-input:focus{border-color:var(--black);background:var(--white);}
+  .hire-input::placeholder{color:var(--gray-400);}
+  .hire-search-btn{padding:10px 18px;background:var(--black);color:var(--white);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:7px;transition:background .15s;}
+  .hire-search-btn:hover{background:#333;}
+  .hire-search-btn:disabled{background:var(--gray-200);color:var(--gray-400);cursor:not-allowed;}
+  .mini-spin{width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+  .hire-search-btn.loading .mini-spin{display:block;}
+  .hire-results{max-width:480px;border:1.5px solid var(--gray-200);border-radius:8px;overflow:hidden;background:var(--white);box-shadow:var(--shadow);display:none;margin-top:4px;}
+  .hire-results.show{display:block;}
+  .hire-result-row{padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;gap:12px;transition:background .12s;}
+  .hire-result-row:last-child{border-bottom:none;}
+  .hire-result-row:hover{background:var(--gray-50);}
+  .hire-result-name{font-size:14px;font-weight:600;color:var(--black);}
+  .hire-result-date{font-size:12px;color:var(--gray-400);margin-top:2px;}
+  .hire-result-key{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:4px;white-space:nowrap;}
+  .hire-results-msg{padding:14px 16px;font-size:13px;color:var(--gray-400);text-align:center;}
+  .confirmed-hire{display:none;align-items:center;gap:12px;background:var(--green-soft);border:1px solid #a8e8c8;border-radius:8px;padding:12px 16px;margin-bottom:18px;}
+  .confirmed-hire.show{display:flex;}
+  .confirmed-hire-name{font-size:14px;font-weight:600;color:var(--black);}
+  .confirmed-hire-key{font-size:12px;color:var(--green);font-weight:600;margin-top:2px;}
+  .change-hire{margin-left:auto;font-size:12px;color:var(--green);cursor:pointer;font-weight:600;text-decoration:underline;white-space:nowrap;}
+  .notes-label{font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+  .notes-input{width:100%;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:7px;font-size:13px;font-family:inherit;background:var(--gray-50);outline:none;color:var(--black);resize:vertical;}
+  .notes-input:focus{border-color:var(--black);background:var(--white);}
+  .notes-input::placeholder{color:var(--gray-400);}
+  .submit-row{display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap;}
+  .submit-btn{display:flex;align-items:center;gap:8px;padding:11px 24px;background:var(--accent);color:var(--white);border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s;}
+  .submit-btn:hover{background:#c93d08;}
+  .submit-btn:disabled{background:var(--gray-200);color:var(--gray-400);cursor:not-allowed;}
+  .btn-spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+  .submit-btn.loading .btn-spin{display:block;}
+  .submit-note{font-size:12px;color:var(--gray-400);line-height:1.5;}
+  .toast{display:none;align-items:flex-start;gap:10px;background:var(--green-soft);border:1.5px solid #a8e8c8;border-radius:var(--radius);padding:14px 18px;font-size:13px;color:#0d6e3f;margin-top:16px;line-height:1.7;}
+  .toast.show{display:flex;}
+  .toast a{color:var(--green);font-weight:600;}
+  .toast-err{display:none;align-items:flex-start;gap:10px;background:#fff4f4;border:1.5px solid #f5b8b8;border-radius:var(--radius);padding:14px 18px;font-size:13px;color:#a00d0d;margin-top:16px;line-height:1.6;}
+  .toast-err.show{display:flex;}
+  .callout{background:var(--accent-soft);border:1px solid #f5c5aa;border-radius:var(--radius);padding:14px 18px;font-size:13px;color:#a03000;margin-bottom:28px;display:flex;align-items:flex-start;gap:10px;line-height:1.6;}
+  .apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:48px;}
+  .app-card{background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:16px 18px;display:flex;align-items:center;gap:14px;transition:all .15s;}
+  .app-card:hover{border-color:var(--black);box-shadow:var(--shadow);}
+  .app-icon{width:34px;height:34px;border-radius:8px;object-fit:contain;flex-shrink:0;}
+  .app-card-name{font-size:13px;font-weight:600;color:var(--black);}
+  .app-card-cat{font-size:11px;color:var(--gray-400);margin-top:2px;}
+  .help-grid{display:flex;gap:14px;flex-wrap:wrap;}
+  .help-card{background:white;border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:20px 22px;flex:1;min-width:220px;}
+  .help-card-title{font-weight:600;font-size:14px;margin-bottom:5px;}
+  .help-card-body{font-size:13px;color:var(--gray-600);line-height:1.6;}
+  .help-card-body strong{color:var(--black);}
+  footer{background:var(--black);color:var(--gray-400);text-align:center;font-size:12px;padding:26px 40px;}
+  footer a{color:var(--accent);text-decoration:none;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+</style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="en"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1">&lt;meta charset="UTF-8"/&gt;</p>
-<p class="p1">&lt;meta name="viewport" content="width=device-width,initial-scale=1"/&gt;</p>
-<p class="p1">&lt;title&gt;Sonos · External User Onboarding&lt;/title&gt;</p>
-<p class="p1">&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>:root {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--black:#111111;--white:#ffffff;--gray-50:#f8f8f6;--gray-100:#efefed;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--gray-200:#ddddd9;--gray-400:#9a9a94;--gray-600:#5a5a55;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--accent:#e8480a;--accent-soft:#fdf0eb;--green:#1a9e5c;--green-soft:#edfaf3;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--radius:10px;--shadow:0 2px 16px rgba(0,0,0,0.09);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>*{box-sizing:border-box;margin:0;padding:0;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>body{font-family:'Inter',sans-serif;background:var(--gray-50);color:var(--black);min-height:100vh;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>header{background:var(--black);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.logo-wrap{display:flex;align-items:center;gap:14px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.header-badge{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-400);border-left:1px solid #333;padding-left:14px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.okta-badge{display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px solid #2e2e2e;border-radius:6px;padding:6px 12px;font-size:12px;color:var(--gray-400);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.okta-dot{width:7px;height:7px;border-radius:50%;background:#00d1b2;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hero{background:var(--black);padding:52px 40px 48px;border-bottom:1px solid #222;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hero h1{font-size:clamp(26px,4vw,40px);font-weight:300;color:var(--white);letter-spacing:-.02em;line-height:1.15;max-width:600px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hero h1 strong{font-weight:700;color:var(--accent);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hero p{margin-top:12px;font-size:15px;color:var(--gray-400);max-width:520px;line-height:1.65;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hero-meta{display:flex;gap:28px;margin-top:28px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hero-stat .n{font-size:28px;font-weight:700;color:var(--white);line-height:1;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hero-stat .l{font-size:11px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:18px 40px;background:var(--white);border-bottom:1px solid var(--gray-200);position:sticky;top:64px;z-index:90;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.search-wrap{position:relative;flex:1;min-width:200px;max-width:300px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray-400);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.search-input{width:100%;padding:8px 14px 8px 36px;border:1.5px solid var(--gray-200);border-radius:100px;font-size:13px;font-family:inherit;background:var(--gray-50);outline:none;color:var(--black);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.search-input:focus{border-color:var(--black);background:var(--white);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.search-input::placeholder{color:var(--gray-400);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.divider-v{width:1px;height:28px;background:var(--gray-200);flex-shrink:0;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.filter-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);white-space:nowrap;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.filter-btn{padding:6px 14px;border-radius:100px;border:1.5px solid var(--gray-200);background:var(--white);font-size:12px;font-weight:500;cursor:pointer;color:var(--gray-600);font-family:inherit;transition:all .15s;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.filter-btn.active{background:var(--black);color:var(--white);border-color:var(--black);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.results-count{margin-left:auto;font-size:12px;color:var(--gray-400);font-weight:500;white-space:nowrap;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.container{max-width:1200px;margin:0 auto;padding:36px 40px 80px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.section-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-bottom:16px;display:flex;align-items:center;gap:10px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.section-title::after{content:'';flex:1;height:1px;background:var(--gray-200);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.divider{height:1px;background:var(--gray-200);margin:44px 0 32px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.roles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px;margin-bottom:52px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.role-card{background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:22px 24px;display:flex;flex-direction:column;gap:12px;transition:all .2s;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.role-card:hover{border-color:#aaa;box-shadow:var(--shadow);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.role-card.selected{border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,72,10,.1);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.role-card.hidden{display:none;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.role-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.profile-id{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-bottom:3px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.role-name{font-size:15px;font-weight:600;color:var(--black);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.role-badge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;padding:3px 9px;border-radius:100px;white-space:nowrap;flex-shrink:0;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.badge-eng{background:#eef3ff;color:#3a5bd9;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.badge-mktg{background:#fff0f3;color:#d93a5b;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.badge-ops{background:#f0faf5;color:#2a9d6e;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.badge-sales{background:#fff8eb;color:#c47d10;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.badge-design{background:#f5eeff;color:#7a3ad9;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.badge-finance{background:#e8f9ff;color:#0a7fa0;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.badge-hr{background:#fff0e8;color:#c45a10;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.role-desc{font-size:13px;color:var(--gray-600);line-height:1.6;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-chips{display:flex;flex-wrap:wrap;gap:7px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-chip{display:flex;align-items:center;gap:6px;background:var(--gray-50);border:1px solid var(--gray-100);border-radius:6px;padding:5px 10px;font-size:12px;font-weight:500;color:var(--gray-600);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-chip img{width:15px;height:15px;object-fit:contain;border-radius:3px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.select-btn{width:100%;padding:9px;border-radius:7px;border:1.5px solid var(--gray-200);background:var(--gray-50);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--gray-600);transition:all .15s;margin-top:2px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.select-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.role-card.selected .select-btn{background:var(--accent);color:var(--white);border-color:var(--accent);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.empty-state{display:none;grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray-400);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.panel{background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;margin-bottom:32px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.panel.locked{opacity:.45;pointer-events:none;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.panel-header{padding:16px 24px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;background:var(--gray-50);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.panel-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.step-circle{width:22px;height:22px;border-radius:50%;background:var(--black);color:var(--white);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.panel-hint{font-size:12px;color:var(--gray-400);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.panel-body{padding:24px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.profile-pill{display:none;align-items:center;gap:12px;background:var(--accent-soft);border:1px solid #f5c5aa;border-radius:8px;padding:10px 16px;margin-bottom:18px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.profile-pill.show{display:flex;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.profile-pill-id{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.profile-pill-name{font-size:13px;font-weight:600;color:var(--black);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.pill-change{margin-left:auto;font-size:12px;color:var(--accent);cursor:pointer;font-weight:600;text-decoration:underline;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.extra-apps-note{font-size:13px;color:var(--gray-600);margin-bottom:14px;line-height:1.6;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-toggles{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-toggle{display:flex;align-items:center;gap:7px;padding:7px 13px;border-radius:8px;border:1.5px solid var(--gray-200);background:var(--white);font-size:13px;font-weight:500;cursor:pointer;color:var(--gray-600);font-family:inherit;user-select:none;transition:all .15s;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-toggle:hover{border-color:var(--black);color:var(--black);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-toggle.on{background:#eef3ff;border-color:#3a5bd9;color:#3a5bd9;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-toggle.included{opacity:.35;cursor:not-allowed;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-toggle img{width:16px;height:16px;object-fit:contain;border-radius:3px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.continue-btn{padding:9px 22px;background:var(--black);color:var(--white);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.continue-btn:hover{background:#333;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-label{font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-sub{font-size:13px;color:var(--gray-400);margin-bottom:12px;line-height:1.6;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-row{display:flex;gap:10px;max-width:480px;margin-bottom:8px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-input{flex:1;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:14px;font-family:inherit;background:var(--gray-50);outline:none;color:var(--black);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-input:focus{border-color:var(--black);background:var(--white);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-input::placeholder{color:var(--gray-400);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-search-btn{padding:10px 18px;background:var(--black);color:var(--white);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:7px;transition:background .15s;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-search-btn:hover{background:#333;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-search-btn:disabled{background:var(--gray-200);color:var(--gray-400);cursor:not-allowed;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.mini-spin{width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-search-btn.loading .mini-spin{display:block;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-results{max-width:480px;border:1.5px solid var(--gray-200);border-radius:8px;overflow:hidden;background:var(--white);box-shadow:var(--shadow);display:none;margin-top:4px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-results.show{display:block;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-result-row{padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;gap:12px;transition:background .12s;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-result-row:last-child{border-bottom:none;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-result-row:hover{background:var(--gray-50);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-result-name{font-size:14px;font-weight:600;color:var(--black);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-result-date{font-size:12px;color:var(--gray-400);margin-top:2px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-result-key{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:4px;white-space:nowrap;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hire-results-msg{padding:14px 16px;font-size:13px;color:var(--gray-400);text-align:center;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.confirmed-hire{display:none;align-items:center;gap:12px;background:var(--green-soft);border:1px solid #a8e8c8;border-radius:8px;padding:12px 16px;margin-bottom:18px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.confirmed-hire.show{display:flex;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.confirmed-hire-name{font-size:14px;font-weight:600;color:var(--black);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.confirmed-hire-key{font-size:12px;color:var(--green);font-weight:600;margin-top:2px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.change-hire{margin-left:auto;font-size:12px;color:var(--green);cursor:pointer;font-weight:600;text-decoration:underline;white-space:nowrap;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.notes-label{font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.notes-input{width:100%;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:7px;font-size:13px;font-family:inherit;background:var(--gray-50);outline:none;color:var(--black);resize:vertical;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.notes-input:focus{border-color:var(--black);background:var(--white);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.notes-input::placeholder{color:var(--gray-400);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.submit-row{display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.submit-btn{display:flex;align-items:center;gap:8px;padding:11px 24px;background:var(--accent);color:var(--white);border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.submit-btn:hover{background:#c93d08;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.submit-btn:disabled{background:var(--gray-200);color:var(--gray-400);cursor:not-allowed;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.btn-spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.submit-btn.loading .btn-spin{display:block;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.submit-note{font-size:12px;color:var(--gray-400);line-height:1.5;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.toast{display:none;align-items:flex-start;gap:10px;background:var(--green-soft);border:1.5px solid #a8e8c8;border-radius:var(--radius);padding:14px 18px;font-size:13px;color:#0d6e3f;margin-top:16px;line-height:1.7;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.toast.show{display:flex;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.toast a{color:var(--green);font-weight:600;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.toast-err{display:none;align-items:flex-start;gap:10px;background:#fff4f4;border:1.5px solid #f5b8b8;border-radius:var(--radius);padding:14px 18px;font-size:13px;color:#a00d0d;margin-top:16px;line-height:1.6;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.toast-err.show{display:flex;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.callout{background:var(--accent-soft);border:1px solid #f5c5aa;border-radius:var(--radius);padding:14px 18px;font-size:13px;color:#a03000;margin-bottom:28px;display:flex;align-items:flex-start;gap:10px;line-height:1.6;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:48px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-card{background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:16px 18px;display:flex;align-items:center;gap:14px;transition:all .15s;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-card:hover{border-color:var(--black);box-shadow:var(--shadow);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-icon{width:34px;height:34px;border-radius:8px;object-fit:contain;flex-shrink:0;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-card-name{font-size:13px;font-weight:600;color:var(--black);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.app-card-cat{font-size:11px;color:var(--gray-400);margin-top:2px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.help-grid{display:flex;gap:14px;flex-wrap:wrap;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.help-card{background:white;border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:20px 22px;flex:1;min-width:220px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.help-card-title{font-weight:600;font-size:14px;margin-bottom:5px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.help-card-body{font-size:13px;color:var(--gray-600);line-height:1.6;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.help-card-body strong{color:var(--black);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>footer{background:var(--black);color:var(--gray-400);text-align:center;font-size:12px;padding:26px 40px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>footer a{color:var(--accent);text-decoration:none;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>@keyframes spin{to{transform:rotate(360deg);}}</p>
-<p class="p1">&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;header&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="logo-wrap"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;svg width="90" height="22" viewBox="0 0 90 22" xmlns="http://www.w3.org/2000/svg"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;text x="0" y="19" font-family="Inter,Arial,sans-serif" font-weight="700" font-size="22" letter-spacing="-0.5" fill="white"&gt;SONOS&lt;/text&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/svg&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;span class="header-badge"&gt;External Onboarding&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="okta-badge"&gt;&lt;div class="okta-dot"&gt;&lt;/div&gt;Okta SSO Active&lt;/div&gt;</p>
-<p class="p1">&lt;/header&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="hero"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;h1&gt;External User&lt;br&gt;&lt;strong&gt;Access Portal&lt;/strong&gt;&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;p&gt;Select a role profile, add any extra apps, find your new hire, and submit — their IT ticket is updated automatically.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="hero-meta"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="hero-stat"&gt;&lt;div class="n" id="heroCount"&gt;9&lt;/div&gt;&lt;div class="l"&gt;Role Profiles&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="hero-stat"&gt;&lt;div class="n"&gt;6&lt;/div&gt;&lt;div class="l"&gt;Applications&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="hero-stat"&gt;&lt;div class="n"&gt;7&lt;/div&gt;&lt;div class="l"&gt;Teams&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="controls"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="search-wrap"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"&gt;&lt;circle cx="11" cy="11" r="8"/&gt;&lt;line x1="21" y1="21" x2="16.65" y2="16.65"/&gt;&lt;/svg&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;input class="search-input" id="searchInput" type="text" placeholder="Search role, team, or app…"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="divider-v"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;span class="filter-label"&gt;Team&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="filter-btn active" data-team="all"&gt;All&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="filter-btn" data-team="Engineering"&gt;Engineering&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="filter-btn" data-team="Marketing"&gt;Marketing&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="filter-btn" data-team="Sales"&gt;Sales&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="filter-btn" data-team="Operations"&gt;Operations&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="filter-btn" data-team="Design"&gt;Design&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="filter-btn" data-team="Finance"&gt;Finance&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="filter-btn" data-team="HR"&gt;HR&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;span class="results-count" id="resultsCount"&gt;9 profiles&lt;/span&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="container"&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="callout"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;span style="font-size:15px;flex-shrink:0;margin-top:1px;"&gt;ℹ️&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;span&gt;&lt;strong&gt;Step 1:&lt;/strong&gt; Choose a role profile. &amp;nbsp;&lt;strong&gt;Step 2:&lt;/strong&gt; Add any extra apps. &amp;nbsp;&lt;strong&gt;Step 3:&lt;/strong&gt; Find your new hire by name. &amp;nbsp;&lt;strong&gt;Step 4:&lt;/strong&gt; Submit.&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;!-- STEP 1 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="section-title"&gt;Step 1 · Choose a Role Profile&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="roles-grid" id="rolesGrid"&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="role-card" data-team="Engineering" data-apps="slack jira confluence zoom" data-text="software contractor engineering developer" data-id="EXT-ENG-01" data-name="Software Contractor"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="role-card-top"&gt;&lt;div&gt;&lt;div class="profile-id"&gt;EXT-ENG-01&lt;/div&gt;&lt;div class="role-name"&gt;Software Contractor&lt;/div&gt;&lt;/div&gt;&lt;span class="role-badge badge-eng"&gt;Engineering&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;p class="role-desc"&gt;External engineers contributing to product development. Includes project tracking, documentation, and team communication.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="app-chips"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/slack.com" alt=""/&gt;Slack&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/atlassian.com" alt=""/&gt;Jira&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/confluence.atlassian.com" alt=""/&gt;Confluence&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/zoom.us" alt=""/&gt;Zoom&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="select-btn"&gt;Select Profile&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="role-card" data-team="Engineering" data-apps="slack jira confluence zoom" data-text="qa quality test engineer" data-id="EXT-ENG-02" data-name="QA / Test Engineer"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="role-card-top"&gt;&lt;div&gt;&lt;div class="profile-id"&gt;EXT-ENG-02&lt;/div&gt;&lt;div class="role-name"&gt;QA / Test Engineer&lt;/div&gt;&lt;/div&gt;&lt;span class="role-badge badge-eng"&gt;Engineering&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;p class="role-desc"&gt;External QA engineers focused on testing and quality. Read-only pipeline access with ticketing and documentation tools.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="app-chips"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/slack.com" alt=""/&gt;Slack&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/atlassian.com" alt=""/&gt;Jira&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/confluence.atlassian.com" alt=""/&gt;Confluence&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/zoom.us" alt=""/&gt;Zoom&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="select-btn"&gt;Select Profile&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="role-card" data-team="Marketing" data-apps="slack zoom google-workspace" data-text="agency partner marketing campaign brand" data-id="EXT-MKT-01" data-name="Agency Partner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="role-card-top"&gt;&lt;div&gt;&lt;div class="profile-id"&gt;EXT-MKT-01&lt;/div&gt;&lt;div class="role-name"&gt;Agency Partner&lt;/div&gt;&lt;/div&gt;&lt;span class="role-badge badge-mktg"&gt;Marketing&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;p class="role-desc"&gt;External agency collaborators on campaigns and brand deliverables.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="app-chips"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/slack.com" alt=""/&gt;Slack&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/zoom.us" alt=""/&gt;Zoom&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/google.com" alt=""/&gt;Google Workspace&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="select-btn"&gt;Select Profile&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="role-card" data-team="Marketing" data-apps="slack zoom google-workspace" data-text="content creator freelance marketing social" data-id="EXT-MKT-02" data-name="Content Creator"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="role-card-top"&gt;&lt;div&gt;&lt;div class="profile-id"&gt;EXT-MKT-02&lt;/div&gt;&lt;div class="role-name"&gt;Content Creator&lt;/div&gt;&lt;/div&gt;&lt;span class="role-badge badge-mktg"&gt;Marketing&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;p class="role-desc"&gt;Freelancers producing written, video, or social content. Limited access scoped to creative delivery.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="app-chips"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/slack.com" alt=""/&gt;Slack&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/zoom.us" alt=""/&gt;Zoom&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/google.com" alt=""/&gt;Google Workspace&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="select-btn"&gt;Select Profile&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="role-card" data-team="Sales" data-apps="salesforce slack zoom google-workspace" data-text="sales consultant reseller partner crm" data-id="EXT-SAL-01" data-name="Sales Consultant"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="role-card-top"&gt;&lt;div&gt;&lt;div class="profile-id"&gt;EXT-SAL-01&lt;/div&gt;&lt;div class="role-name"&gt;Sales Consultant&lt;/div&gt;&lt;/div&gt;&lt;span class="role-badge badge-sales"&gt;Sales&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;p class="role-desc"&gt;External sales consultants and reseller partners needing CRM access for Sonos channel programs.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="app-chips"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/salesforce.com" alt=""/&gt;Salesforce&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/slack.com" alt=""/&gt;Slack&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/zoom.us" alt=""/&gt;Zoom&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/google.com" alt=""/&gt;Google Workspace&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="select-btn"&gt;Select Profile&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="role-card" data-team="Operations" data-apps="jira slack zoom confluence" data-text="operations vendor support it managed service" data-id="EXT-OPS-01" data-name="IT / Support Vendor"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="role-card-top"&gt;&lt;div&gt;&lt;div class="profile-id"&gt;EXT-OPS-01&lt;/div&gt;&lt;div class="role-name"&gt;IT / Support Vendor&lt;/div&gt;&lt;/div&gt;&lt;span class="role-badge badge-ops"&gt;Operations&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;p class="role-desc"&gt;External IT support vendors and MSPs. Scoped access for ticketing and incident response.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="app-chips"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/atlassian.com" alt=""/&gt;Jira&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/slack.com" alt=""/&gt;Slack&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/zoom.us" alt=""/&gt;Zoom&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/confluence.atlassian.com" alt=""/&gt;Confluence&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="select-btn"&gt;Select Profile&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="role-card" data-team="Design" data-apps="slack zoom google-workspace confluence" data-text="ux design creative freelance illustrator" data-id="EXT-DES-01" data-name="UX / Creative Partner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="role-card-top"&gt;&lt;div&gt;&lt;div class="profile-id"&gt;EXT-DES-01&lt;/div&gt;&lt;div class="role-name"&gt;UX / Creative Partner&lt;/div&gt;&lt;/div&gt;&lt;span class="role-badge badge-design"&gt;Design&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;p class="role-desc"&gt;External UX designers and creative vendors on product and brand design work.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="app-chips"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/slack.com" alt=""/&gt;Slack&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/zoom.us" alt=""/&gt;Zoom&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/google.com" alt=""/&gt;Google Workspace&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/confluence.atlassian.com" alt=""/&gt;Confluence&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="select-btn"&gt;Select Profile&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="role-card" data-team="Finance" data-apps="zoom google-workspace" data-text="finance audit advisory compliance" data-id="EXT-FIN-01" data-name="Audit / Advisory"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="role-card-top"&gt;&lt;div&gt;&lt;div class="profile-id"&gt;EXT-FIN-01&lt;/div&gt;&lt;div class="role-name"&gt;Audit / Advisory&lt;/div&gt;&lt;/div&gt;&lt;span class="role-badge badge-finance"&gt;Finance&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;p class="role-desc"&gt;External auditors and financial advisors. Time-limited, controlled access to compliance tools.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="app-chips"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/zoom.us" alt=""/&gt;Zoom&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/google.com" alt=""/&gt;Google Workspace&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="select-btn"&gt;Select Profile&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="role-card" data-team="HR" data-apps="slack zoom google-workspace" data-text="hr recruiter talent staffing" data-id="EXT-HR-01" data-name="Recruiting Partner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="role-card-top"&gt;&lt;div&gt;&lt;div class="profile-id"&gt;EXT-HR-01&lt;/div&gt;&lt;div class="role-name"&gt;Recruiting Partner&lt;/div&gt;&lt;/div&gt;&lt;span class="role-badge badge-hr"&gt;HR&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;p class="role-desc"&gt;External recruiters and staffing agencies supporting talent acquisition at Sonos.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="app-chips"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/slack.com" alt=""/&gt;Slack&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/zoom.us" alt=""/&gt;Zoom&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="app-chip"&gt;&lt;img src="https://logo.clearbit.com/google.com" alt=""/&gt;Google Workspace&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="select-btn"&gt;Select Profile&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="empty-state" id="emptyState"&gt;&lt;div style="font-size:36px;margin-bottom:10px;"&gt;🔍&lt;/div&gt;&lt;p&gt;No profiles match your search.&lt;/p&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="divider"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;!-- STEP 2 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="section-title"&gt;Step 2 · Add Extra Apps&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="panel locked" id="panel2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="panel-header"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="panel-title"&gt;&lt;div class="step-circle"&gt;2&lt;/div&gt;Additional Application Access&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="panel-hint" id="hint2"&gt;Select a role profile above to unlock&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="panel-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="profile-pill" id="pill2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;&lt;div class="profile-pill-id" id="pill2id"&gt;&lt;/div&gt;&lt;div class="profile-pill-name" id="pill2name"&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="pill-change" id="pill2change"&gt;Change ↑&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;p class="extra-apps-note"&gt;Select any apps your hire needs beyond what's already in their profile. Greyed out = already included.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="app-toggles" id="appToggles"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="app-toggle" data-app="Slack"&gt;&lt;img src="https://logo.clearbit.com/slack.com" alt=""/&gt;Slack&lt;span class="chk"&gt;&lt;/span&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="app-toggle" data-app="Jira"&gt;&lt;img src="https://logo.clearbit.com/atlassian.com" alt=""/&gt;Jira&lt;span class="chk"&gt;&lt;/span&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="app-toggle" data-app="Confluence"&gt;&lt;img src="https://logo.clearbit.com/confluence.atlassian.com" alt=""/&gt;Confluence&lt;span class="chk"&gt;&lt;/span&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="app-toggle" data-app="Zoom"&gt;&lt;img src="https://logo.clearbit.com/zoom.us" alt=""/&gt;Zoom&lt;span class="chk"&gt;&lt;/span&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="app-toggle" data-app="Google Workspace"&gt;&lt;img src="https://logo.clearbit.com/google.com" alt=""/&gt;Google Workspace&lt;span class="chk"&gt;&lt;/span&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="app-toggle" data-app="Salesforce"&gt;&lt;img src="https://logo.clearbit.com/salesforce.com" alt=""/&gt;Salesforce&lt;span class="chk"&gt;&lt;/span&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="continue-btn" id="continueBtn"&gt;Continue to Step 3 →&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="divider"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;!-- STEP 3 + 4 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="section-title"&gt;Step 3 · Find New Hire &amp;amp; Submit&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="panel locked" id="panel3"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="panel-header"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="panel-title"&gt;&lt;div class="step-circle"&gt;3&lt;/div&gt;New Hire Lookup&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="panel-hint" id="hint3"&gt;Complete Steps 1 &amp;amp; 2 to unlock&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="panel-body"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="profile-pill" id="pill3"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;&lt;div class="profile-pill-id" id="pill3id"&gt;&lt;/div&gt;&lt;div class="profile-pill-name" id="pill3name"&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="pill-change" id="pill3change"&gt;Change ↑&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="lookupSection"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="hire-label"&gt;Search by new hire name&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p class="hire-sub"&gt;Type their name as submitted in Workday — we'll find their GSSD ticket automatically.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="hire-row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;input class="hire-input" id="hireInput" type="text" placeholder="e.g. Sarah Chen"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="hire-search-btn" id="searchBtn"&gt;&lt;div class="mini-spin"&gt;&lt;/div&gt;&lt;span&gt;Search&lt;/span&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="hire-results" id="hireResults"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="confirmed-hire" id="confirmedHire"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="confirmed-hire-name" id="confirmedName"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="confirmed-hire-key" id="confirmedKey"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="change-hire" id="changeHireBtn"&gt;Change hire&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="submitSection" style="display:none;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="notes-label"&gt;Notes / Justification&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;textarea class="notes-input" id="notesInput" rows="3" placeholder="Briefly explain any additional access requests or special requirements…"&gt;&lt;/textarea&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="submit-row"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="submit-btn" id="submitBtn"&gt;&lt;div class="btn-spin"&gt;&lt;/div&gt;&lt;span&gt;Step 4 · Post Comment to Jira&lt;/span&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="submit-note"&gt;A comment will be added to the GSSD ticket&lt;br&gt;with the selected profile and access details.&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="toast" id="toast"&gt;&lt;span style="font-size:16px;flex-shrink:0;"&gt;✅&lt;/span&gt;&lt;span id="toastMsg"&gt;&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="toast-err" id="toastErr"&gt;&lt;span style="font-size:16px;flex-shrink:0;"&gt;⚠️&lt;/span&gt;&lt;span id="toastErrMsg"&gt;&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="divider"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="section-title"&gt;Available Applications&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="apps-grid"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="app-card"&gt;&lt;img class="app-icon" src="https://logo.clearbit.com/slack.com" alt=""/&gt;&lt;div&gt;&lt;div class="app-card-name"&gt;Slack&lt;/div&gt;&lt;div class="app-card-cat"&gt;Messaging&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="app-card"&gt;&lt;img class="app-icon" src="https://logo.clearbit.com/zoom.us" alt=""/&gt;&lt;div&gt;&lt;div class="app-card-name"&gt;Zoom&lt;/div&gt;&lt;div class="app-card-cat"&gt;Video Conferencing&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="app-card"&gt;&lt;img class="app-icon" src="https://logo.clearbit.com/atlassian.com" alt=""/&gt;&lt;div&gt;&lt;div class="app-card-name"&gt;Jira&lt;/div&gt;&lt;div class="app-card-cat"&gt;Project Tracking&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="app-card"&gt;&lt;img class="app-icon" src="https://logo.clearbit.com/confluence.atlassian.com" alt=""/&gt;&lt;div&gt;&lt;div class="app-card-name"&gt;Confluence&lt;/div&gt;&lt;div class="app-card-cat"&gt;Documentation&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="app-card"&gt;&lt;img class="app-icon" src="https://logo.clearbit.com/google.com" alt=""/&gt;&lt;div&gt;&lt;div class="app-card-name"&gt;Google Workspace&lt;/div&gt;&lt;div class="app-card-cat"&gt;Productivity Suite&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="app-card"&gt;&lt;img class="app-icon" src="https://logo.clearbit.com/salesforce.com" alt=""/&gt;&lt;div&gt;&lt;div class="app-card-name"&gt;Salesforce&lt;/div&gt;&lt;div class="app-card-cat"&gt;CRM&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="divider"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="section-title"&gt;Need Help?&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="help-grid"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="help-card"&gt;&lt;div class="help-card-title"&gt;IT Ops Team&lt;/div&gt;&lt;div class="help-card-body"&gt;Reach out on &lt;strong&gt;#it-ops&lt;/strong&gt; in Slack or open a ServiceNow ticket.&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="help-card"&gt;&lt;div class="help-card-title"&gt;New Profile Needed?&lt;/div&gt;&lt;div class="help-card-body"&gt;Contact IT Ops at least &lt;strong&gt;5 business days&lt;/strong&gt; before the hire's start date.&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="help-card"&gt;&lt;div class="help-card-title"&gt;Hire Not Found?&lt;/div&gt;&lt;div class="help-card-body"&gt;Workday submissions take &lt;strong&gt;~1 hour&lt;/strong&gt; to generate a GSSD ticket. Check back shortly.&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;footer&gt;© 2026 Sonos, Inc. · Internal IT Operations · &lt;a href="#"&gt;Privacy Policy&lt;/a&gt; · &lt;a href="#"&gt;Acceptable Use&lt;/a&gt;&lt;/footer&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;script&gt;</p>
-<p class="p1">(function () {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var JIRA_BASE = 'http://localhost:3000/jira/mcp';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var activeTeam = 'all';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var selCard = null;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var profId = null;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var profName = null;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var profApps = [];</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var ticketKey = null;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>var hireName = null;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>function el(id) { return document.getElementById(id); }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>function lock(id) { el(id).classList.add('locked'); }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>function unlock(id) { el(id).classList.remove('locked'); }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// ── Jira via MCP fetch ──</p>
-<p class="p1"><span class="Apple-converted-space">  </span>function jiraSearch(name, onSuccess, onError) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var jql = 'project = GSSD AND summary ~ "New Prep Request" AND summary ~ "' + name + '" ORDER BY created DESC';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>fetch(JIRA_BASE + '/rest/api/2/search?jql=' + encodeURIComponent(jql) + '&amp;fields=summary,created&amp;maxResults=10', {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>headers: { 'Accept': 'application/json' }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>})</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.then(function(r) { return r.json(); })</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.then(function(data) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>var results = (data.issues || []).map(function(i) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>return { key: i.key, summary: i.fields.summary, created: (i.fields.created || '').slice(0,10) };</p>
-<p class="p1"><span class="Apple-converted-space">      </span>});</p>
-<p class="p1"><span class="Apple-converted-space">      </span>onSuccess(results);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>})</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.catch(onError);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>function jiraComment(key, body, onSuccess, onError) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>fetch(JIRA_BASE + '/rest/api/2/issue/' + key + '/comment', {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>method: 'POST',</p>
-<p class="p1"><span class="Apple-converted-space">      </span>headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>body: JSON.stringify({ body: body })</p>
-<p class="p1"><span class="Apple-converted-space">    </span>})</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.then(function(r) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (!r.ok) return r.json().then(function(e) { throw new Error(e.errorMessages ? e.errorMessages.join(', ') : 'Status ' + r.status); });</p>
-<p class="p1"><span class="Apple-converted-space">      </span>return r.json();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>})</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.then(onSuccess)</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.catch(onError);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// ── Filters ──</p>
-<p class="p1"><span class="Apple-converted-space">  </span>el('searchInput').addEventListener('input', applyFilters);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.filter-btn').forEach(function(btn) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>btn.addEventListener('click', function() {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>activeTeam = this.dataset.team;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.classList.add('active');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>applyFilters();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>function applyFilters() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var q = el('searchInput').value.toLowerCase().trim();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var cards = document.querySelectorAll('.role-card[data-team]');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var visible = 0;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>cards.forEach(function(c) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>var teamOk = activeTeam === 'all' || c.dataset.team === activeTeam;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>var searchOk = !q || c.dataset.text.includes(q) || c.dataset.apps.includes(q) ||</p>
-<p class="p1"><span class="Apple-converted-space">        </span>c.dataset.team.toLowerCase().includes(q) ||</p>
-<p class="p1"><span class="Apple-converted-space">        </span>c.querySelector('.role-name').textContent.toLowerCase().includes(q) ||</p>
-<p class="p1"><span class="Apple-converted-space">        </span>c.querySelector('.profile-id').textContent.toLowerCase().includes(q);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (teamOk &amp;&amp; searchOk) { c.classList.remove('hidden'); visible++; }</p>
-<p class="p1"><span class="Apple-converted-space">      </span>else c.classList.add('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('resultsCount').textContent = visible + ' profile' + (visible !== 1 ? 's' : '');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('heroCount').textContent = visible;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('emptyState').style.display = visible === 0 ? 'block' : 'none';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// ── Step 1 ──</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('.select-btn').forEach(function(btn) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>btn.addEventListener('click', function() {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>var card = this.closest('.role-card');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (selCard) { selCard.classList.remove('selected'); selCard.querySelector('.select-btn').textContent = 'Select Profile'; }</p>
-<p class="p1"><span class="Apple-converted-space">      </span>selCard = card; card.classList.add('selected'); this.textContent = '✓ Selected';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>profId = card.dataset.id; profName = card.dataset.name; profApps = card.dataset.apps.split(' ');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el('pill2id').textContent = profId; el('pill2name').textContent = profName;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el('pill2').classList.add('show'); el('hint2').textContent = profId + ' · ' + profName;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>unlock('panel2'); refreshToggles();</p>
-<p class="p1"><span class="Apple-converted-space">      </span>lock('panel3'); el('hint3').textContent = 'Complete Steps 1 &amp; 2 to unlock';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el('pill3').classList.remove('show'); resetHire();</p>
-<p class="p1"><span class="Apple-converted-space">      </span>setTimeout(function() { el('panel2').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>el('pill2change').addEventListener('click', function() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (selCard) { selCard.classList.remove('selected'); selCard.querySelector('.select-btn').textContent = 'Select Profile'; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>selCard = null; profId = null; profName = null; profApps = [];</p>
-<p class="p1"><span class="Apple-converted-space">    </span>lock('panel2'); el('pill2').classList.remove('show');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>lock('panel3'); el('pill3').classList.remove('show');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>resetHire(); window.scrollTo({ top: 0, behavior: 'smooth' });</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>function refreshToggles() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.querySelectorAll('#appToggles .app-toggle').forEach(function(t) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>var key = t.dataset.app.toLowerCase().replace(/ /g, '-');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>t.classList.remove('on', 'included'); t.querySelector('.chk').textContent = '';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (profApps.includes(key)) { t.classList.add('included'); t.querySelector('.chk').textContent = ' ✓'; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.querySelectorAll('#appToggles .app-toggle').forEach(function(t) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>t.addEventListener('click', function() {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (this.classList.contains('included')) return;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.classList.toggle('on');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>this.querySelector('.chk').textContent = this.classList.contains('on') ? ' ✓' : '';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// ── Step 2 ──</p>
-<p class="p1"><span class="Apple-converted-space">  </span>el('continueBtn').addEventListener('click', function() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('pill3id').textContent = profId; el('pill3name').textContent = profName;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('pill3').classList.add('show'); el('hint3').textContent = profId + ' · ' + profName;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>unlock('panel3');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>setTimeout(function() { el('panel3').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>el('pill3change').addEventListener('click', function() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>lock('panel3'); el('pill3').classList.remove('show'); resetHire();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// ── Step 3 ──</p>
-<p class="p1"><span class="Apple-converted-space">  </span>el('searchBtn').addEventListener('click', doSearch);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>el('hireInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') doSearch(); });</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>function doSearch() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var q = el('hireInput').value.trim();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (!q) return;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var btn = el('searchBtn');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>btn.querySelector('.mini-spin').style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>btn.classList.add('loading'); btn.disabled = true;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var res = el('hireResults');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>res.innerHTML = '&lt;div class="hire-results-msg"&gt;Searching Jira…&lt;/div&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>res.classList.add('show');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>jiraSearch(q, function(results) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>btn.querySelector('.mini-spin').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>btn.classList.remove('loading'); btn.disabled = false;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (!results.length) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>res.innerHTML = '&lt;div class="hire-results-msg"&gt;No "New Prep Request" tickets found for "' + q + '". The Workday submission may still be processing (~1 hour).&lt;/div&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>res.innerHTML = results.map(function(h) {</p>
-<p class="p1"><span class="Apple-converted-space">          </span>return '&lt;div class="hire-result-row" data-key="' + h.key + '" data-summary="' + h.summary.replace(/"/g, '&amp;quot;') + '"&gt;' +</p>
-<p class="p1"><span class="Apple-converted-space">            </span>'&lt;div&gt;&lt;div class="hire-result-name"&gt;' + h.summary + '&lt;/div&gt;&lt;div class="hire-result-date"&gt;Created ' + h.created + '&lt;/div&gt;&lt;/div&gt;' +</p>
-<p class="p1"><span class="Apple-converted-space">            </span>'&lt;span class="hire-result-key"&gt;' + h.key + '&lt;/span&gt;&lt;/div&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}).join('');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>res.querySelectorAll('.hire-result-row').forEach(function(row) {</p>
-<p class="p1"><span class="Apple-converted-space">          </span>row.addEventListener('click', function() { confirmHire(this.dataset.key, this.dataset.summary); });</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}, function(err) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>btn.querySelector('.mini-spin').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>btn.classList.remove('loading'); btn.disabled = false;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>res.innerHTML = '&lt;div class="hire-results-msg"&gt;Could not reach Jira. (' + err.message + ')&lt;/div&gt;';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>function confirmHire(key, name) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>ticketKey = key; hireName = name;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('lookupSection').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('hireResults').classList.remove('show');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('confirmedName').textContent = name;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('confirmedKey').textContent = '🎫 ' + key + ' · GSSD ticket found';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('confirmedHire').classList.add('show');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('submitSection').style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>el('changeHireBtn').addEventListener('click', resetHire);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>function resetHire() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>ticketKey = null; hireName = null;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('lookupSection').style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('hireInput').value = '';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('hireResults').classList.remove('show'); el('hireResults').innerHTML = '';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('confirmedHire').classList.remove('show');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('submitSection').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('toast').classList.remove('show'); el('toastErr').classList.remove('show');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// ── Step 4 ──</p>
-<p class="p1"><span class="Apple-converted-space">  </span>el('submitBtn').addEventListener('click', function() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (!ticketKey) return;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var notes = el('notesInput').value.trim();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var extra = [];</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.querySelectorAll('#appToggles .app-toggle.on').forEach(function(t) { extra.push(t.dataset.app); });</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var stdApps = profApps.map(function(a) { return a.replace(/-/g,' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); }); }).join(', ');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>var btn = el('submitBtn');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>btn.classList.add('loading'); btn.disabled = true;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el('toast').classList.remove('show'); el('toastErr').classList.remove('show');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>var body =</p>
-<p class="p1"><span class="Apple-converted-space">      </span>'[External Onboarding Access Update]\n\n' +</p>
-<p class="p1"><span class="Apple-converted-space">      </span>'New Hire: ' + hireName + '\n' +</p>
-<p class="p1"><span class="Apple-converted-space">      </span>'Role Profile: ' + profId + ' - ' + profName + '\n' +</p>
-<p class="p1"><span class="Apple-converted-space">      </span>'Standard Apps: ' + stdApps + '\n' +</p>
-<p class="p1"><span class="Apple-converted-space">      </span>'Additional Apps Requested: ' + (extra.length ? extra.join(', ') : 'None') + '\n' +</p>
-<p class="p1"><span class="Apple-converted-space">      </span>'Notes: ' + (notes || 'None') + '\n\n' +</p>
-<p class="p1"><span class="Apple-converted-space">      </span>'Submitted via Sonos External Onboarding Portal';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>jiraComment(ticketKey, body, function() {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>var url = 'https://jira.sonos.com/browse/' + ticketKey;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el('toastMsg').innerHTML =</p>
-<p class="p1"><span class="Apple-converted-space">        </span>'Comment posted to &lt;a href="' + url + '" target="_blank"&gt;&lt;strong&gt;' + ticketKey + '&lt;/strong&gt;&lt;/a&gt;. IT Ops will provision access shortly.&lt;br&gt;&lt;br&gt;' +</p>
-<p class="p1"><span class="Apple-converted-space">        </span>'&lt;strong&gt;Hire:&lt;/strong&gt; ' + hireName + '&lt;br&gt;' +</p>
-<p class="p1"><span class="Apple-converted-space">        </span>'&lt;strong&gt;Profile:&lt;/strong&gt; ' + profId + ' \u2013 ' + profName + '&lt;br&gt;' +</p>
-<p class="p1"><span class="Apple-converted-space">        </span>'&lt;strong&gt;Standard Apps:&lt;/strong&gt; ' + stdApps + '&lt;br&gt;' +</p>
-<p class="p1"><span class="Apple-converted-space">        </span>'&lt;strong&gt;Extra Apps:&lt;/strong&gt; ' + (extra.length ? extra.join(', ') : 'None') + '&lt;br&gt;' +</p>
-<p class="p1"><span class="Apple-converted-space">        </span>'&lt;strong&gt;Notes:&lt;/strong&gt; ' + (notes || 'None');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el('toast').classList.add('show');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el('notesInput').value = '';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>document.querySelectorAll('#appToggles .app-toggle.on').forEach(function(t) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>t.classList.remove('on'); t.querySelector('.chk').textContent = '';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>});</p>
-<p class="p1"><span class="Apple-converted-space">      </span>btn.classList.remove('loading'); btn.disabled = false;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}, function(err) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el('toastErr').classList.add('show');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>el('toastErrMsg').textContent = 'Could not post to Jira: ' + err.message + '. Contact IT Ops on #it-ops.';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>btn.classList.remove('loading'); btn.disabled = false;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p2"><br></p>
-<p class="p1">})();</p>
-<p class="p1">&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+
+<header>
+  <div class="logo-wrap">
+    <svg width="90" height="22" viewBox="0 0 90 22" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="19" font-family="Inter,Arial,sans-serif" font-weight="700" font-size="22" letter-spacing="-0.5" fill="white">SONOS</text>
+    </svg>
+    <span class="header-badge">External Onboarding</span>
+  </div>
+  <div class="okta-badge"><div class="okta-dot"></div>Okta SSO Active</div>
+</header>
+
+<div class="hero">
+  <h1>External User<br><strong>Access Portal</strong></h1>
+  <p>Select a role profile, add any extra apps, find your new hire, and submit — their IT ticket is updated automatically.</p>
+  <div class="hero-meta">
+    <div class="hero-stat"><div class="n" id="heroCount">9</div><div class="l">Role Profiles</div></div>
+    <div class="hero-stat"><div class="n">6</div><div class="l">Applications</div></div>
+    <div class="hero-stat"><div class="n">7</div><div class="l">Teams</div></div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="search-wrap">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="search-input" id="searchInput" type="text" placeholder="Search role, team, or app…"/>
+  </div>
+  <div class="divider-v"></div>
+  <span class="filter-label">Team</span>
+  <button class="filter-btn active" data-team="all">All</button>
+  <button class="filter-btn" data-team="Engineering">Engineering</button>
+  <button class="filter-btn" data-team="Marketing">Marketing</button>
+  <button class="filter-btn" data-team="Sales">Sales</button>
+  <button class="filter-btn" data-team="Operations">Operations</button>
+  <button class="filter-btn" data-team="Design">Design</button>
+  <button class="filter-btn" data-team="Finance">Finance</button>
+  <button class="filter-btn" data-team="HR">HR</button>
+  <span class="results-count" id="resultsCount">9 profiles</span>
+</div>
+
+<div class="container">
+
+  <div class="callout">
+    <span style="font-size:15px;flex-shrink:0;margin-top:1px;">ℹ️</span>
+    <span><strong>Step 1:</strong> Choose a role profile. &nbsp;<strong>Step 2:</strong> Add any extra apps. &nbsp;<strong>Step 3:</strong> Find your new hire by name. &nbsp;<strong>Step 4:</strong> Submit.</span>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="section-title">Step 1 · Choose a Role Profile</div>
+  <div class="roles-grid" id="rolesGrid">
+
+    <div class="role-card" data-team="Engineering" data-apps="slack jira confluence zoom" data-text="software contractor engineering developer" data-id="EXT-ENG-01" data-name="Software Contractor">
+      <div class="role-card-top"><div><div class="profile-id">EXT-ENG-01</div><div class="role-name">Software Contractor</div></div><span class="role-badge badge-eng">Engineering</span></div>
+      <p class="role-desc">External engineers contributing to product development. Includes project tracking, documentation, and team communication.</p>
+      <div class="app-chips">
+        <div class="app-chip"><img src="https://logo.clearbit.com/slack.com" alt=""/>Slack</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/atlassian.com" alt=""/>Jira</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/confluence.atlassian.com" alt=""/>Confluence</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/zoom.us" alt=""/>Zoom</div>
+      </div>
+      <button class="select-btn">Select Profile</button>
+    </div>
+
+    <div class="role-card" data-team="Engineering" data-apps="slack jira confluence zoom" data-text="qa quality test engineer" data-id="EXT-ENG-02" data-name="QA / Test Engineer">
+      <div class="role-card-top"><div><div class="profile-id">EXT-ENG-02</div><div class="role-name">QA / Test Engineer</div></div><span class="role-badge badge-eng">Engineering</span></div>
+      <p class="role-desc">External QA engineers focused on testing and quality. Read-only pipeline access with ticketing and documentation tools.</p>
+      <div class="app-chips">
+        <div class="app-chip"><img src="https://logo.clearbit.com/slack.com" alt=""/>Slack</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/atlassian.com" alt=""/>Jira</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/confluence.atlassian.com" alt=""/>Confluence</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/zoom.us" alt=""/>Zoom</div>
+      </div>
+      <button class="select-btn">Select Profile</button>
+    </div>
+
+    <div class="role-card" data-team="Marketing" data-apps="slack zoom google-workspace" data-text="agency partner marketing campaign brand" data-id="EXT-MKT-01" data-name="Agency Partner">
+      <div class="role-card-top"><div><div class="profile-id">EXT-MKT-01</div><div class="role-name">Agency Partner</div></div><span class="role-badge badge-mktg">Marketing</span></div>
+      <p class="role-desc">External agency collaborators on campaigns and brand deliverables.</p>
+      <div class="app-chips">
+        <div class="app-chip"><img src="https://logo.clearbit.com/slack.com" alt=""/>Slack</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/zoom.us" alt=""/>Zoom</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/google.com" alt=""/>Google Workspace</div>
+      </div>
+      <button class="select-btn">Select Profile</button>
+    </div>
+
+    <div class="role-card" data-team="Marketing" data-apps="slack zoom google-workspace" data-text="content creator freelance marketing social" data-id="EXT-MKT-02" data-name="Content Creator">
+      <div class="role-card-top"><div><div class="profile-id">EXT-MKT-02</div><div class="role-name">Content Creator</div></div><span class="role-badge badge-mktg">Marketing</span></div>
+      <p class="role-desc">Freelancers producing written, video, or social content. Limited access scoped to creative delivery.</p>
+      <div class="app-chips">
+        <div class="app-chip"><img src="https://logo.clearbit.com/slack.com" alt=""/>Slack</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/zoom.us" alt=""/>Zoom</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/google.com" alt=""/>Google Workspace</div>
+      </div>
+      <button class="select-btn">Select Profile</button>
+    </div>
+
+    <div class="role-card" data-team="Sales" data-apps="salesforce slack zoom google-workspace" data-text="sales consultant reseller partner crm" data-id="EXT-SAL-01" data-name="Sales Consultant">
+      <div class="role-card-top"><div><div class="profile-id">EXT-SAL-01</div><div class="role-name">Sales Consultant</div></div><span class="role-badge badge-sales">Sales</span></div>
+      <p class="role-desc">External sales consultants and reseller partners needing CRM access for Sonos channel programs.</p>
+      <div class="app-chips">
+        <div class="app-chip"><img src="https://logo.clearbit.com/salesforce.com" alt=""/>Salesforce</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/slack.com" alt=""/>Slack</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/zoom.us" alt=""/>Zoom</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/google.com" alt=""/>Google Workspace</div>
+      </div>
+      <button class="select-btn">Select Profile</button>
+    </div>
+
+    <div class="role-card" data-team="Operations" data-apps="jira slack zoom confluence" data-text="operations vendor support it managed service" data-id="EXT-OPS-01" data-name="IT / Support Vendor">
+      <div class="role-card-top"><div><div class="profile-id">EXT-OPS-01</div><div class="role-name">IT / Support Vendor</div></div><span class="role-badge badge-ops">Operations</span></div>
+      <p class="role-desc">External IT support vendors and MSPs. Scoped access for ticketing and incident response.</p>
+      <div class="app-chips">
+        <div class="app-chip"><img src="https://logo.clearbit.com/atlassian.com" alt=""/>Jira</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/slack.com" alt=""/>Slack</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/zoom.us" alt=""/>Zoom</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/confluence.atlassian.com" alt=""/>Confluence</div>
+      </div>
+      <button class="select-btn">Select Profile</button>
+    </div>
+
+    <div class="role-card" data-team="Design" data-apps="slack zoom google-workspace confluence" data-text="ux design creative freelance illustrator" data-id="EXT-DES-01" data-name="UX / Creative Partner">
+      <div class="role-card-top"><div><div class="profile-id">EXT-DES-01</div><div class="role-name">UX / Creative Partner</div></div><span class="role-badge badge-design">Design</span></div>
+      <p class="role-desc">External UX designers and creative vendors on product and brand design work.</p>
+      <div class="app-chips">
+        <div class="app-chip"><img src="https://logo.clearbit.com/slack.com" alt=""/>Slack</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/zoom.us" alt=""/>Zoom</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/google.com" alt=""/>Google Workspace</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/confluence.atlassian.com" alt=""/>Confluence</div>
+      </div>
+      <button class="select-btn">Select Profile</button>
+    </div>
+
+    <div class="role-card" data-team="Finance" data-apps="zoom google-workspace" data-text="finance audit advisory compliance" data-id="EXT-FIN-01" data-name="Audit / Advisory">
+      <div class="role-card-top"><div><div class="profile-id">EXT-FIN-01</div><div class="role-name">Audit / Advisory</div></div><span class="role-badge badge-finance">Finance</span></div>
+      <p class="role-desc">External auditors and financial advisors. Time-limited, controlled access to compliance tools.</p>
+      <div class="app-chips">
+        <div class="app-chip"><img src="https://logo.clearbit.com/zoom.us" alt=""/>Zoom</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/google.com" alt=""/>Google Workspace</div>
+      </div>
+      <button class="select-btn">Select Profile</button>
+    </div>
+
+    <div class="role-card" data-team="HR" data-apps="slack zoom google-workspace" data-text="hr recruiter talent staffing" data-id="EXT-HR-01" data-name="Recruiting Partner">
+      <div class="role-card-top"><div><div class="profile-id">EXT-HR-01</div><div class="role-name">Recruiting Partner</div></div><span class="role-badge badge-hr">HR</span></div>
+      <p class="role-desc">External recruiters and staffing agencies supporting talent acquisition at Sonos.</p>
+      <div class="app-chips">
+        <div class="app-chip"><img src="https://logo.clearbit.com/slack.com" alt=""/>Slack</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/zoom.us" alt=""/>Zoom</div>
+        <div class="app-chip"><img src="https://logo.clearbit.com/google.com" alt=""/>Google Workspace</div>
+      </div>
+      <button class="select-btn">Select Profile</button>
+    </div>
+
+    <div class="empty-state" id="emptyState"><div style="font-size:36px;margin-bottom:10px;">🔍</div><p>No profiles match your search.</p></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- STEP 2 -->
+  <div class="section-title">Step 2 · Add Extra Apps</div>
+  <div class="panel locked" id="panel2">
+    <div class="panel-header">
+      <div class="panel-title"><div class="step-circle">2</div>Additional Application Access</div>
+      <span class="panel-hint" id="hint2">Select a role profile above to unlock</span>
+    </div>
+    <div class="panel-body">
+      <div class="profile-pill" id="pill2">
+        <div><div class="profile-pill-id" id="pill2id"></div><div class="profile-pill-name" id="pill2name"></div></div>
+        <span class="pill-change" id="pill2change">Change ↑</span>
+      </div>
+      <p class="extra-apps-note">Select any apps your hire needs beyond what's already in their profile. Greyed out = already included.</p>
+      <div class="app-toggles" id="appToggles">
+        <button class="app-toggle" data-app="Slack"><img src="https://logo.clearbit.com/slack.com" alt=""/>Slack<span class="chk"></span></button>
+        <button class="app-toggle" data-app="Jira"><img src="https://logo.clearbit.com/atlassian.com" alt=""/>Jira<span class="chk"></span></button>
+        <button class="app-toggle" data-app="Confluence"><img src="https://logo.clearbit.com/confluence.atlassian.com" alt=""/>Confluence<span class="chk"></span></button>
+        <button class="app-toggle" data-app="Zoom"><img src="https://logo.clearbit.com/zoom.us" alt=""/>Zoom<span class="chk"></span></button>
+        <button class="app-toggle" data-app="Google Workspace"><img src="https://logo.clearbit.com/google.com" alt=""/>Google Workspace<span class="chk"></span></button>
+        <button class="app-toggle" data-app="Salesforce"><img src="https://logo.clearbit.com/salesforce.com" alt=""/>Salesforce<span class="chk"></span></button>
+      </div>
+      <button class="continue-btn" id="continueBtn">Continue to Step 3 →</button>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- STEP 3 + 4 -->
+  <div class="section-title">Step 3 · Find New Hire &amp; Submit</div>
+  <div class="panel locked" id="panel3">
+    <div class="panel-header">
+      <div class="panel-title"><div class="step-circle">3</div>New Hire Lookup</div>
+      <span class="panel-hint" id="hint3">Complete Steps 1 &amp; 2 to unlock</span>
+    </div>
+    <div class="panel-body">
+      <div class="profile-pill" id="pill3">
+        <div><div class="profile-pill-id" id="pill3id"></div><div class="profile-pill-name" id="pill3name"></div></div>
+        <span class="pill-change" id="pill3change">Change ↑</span>
+      </div>
+
+      <div id="lookupSection">
+        <div class="hire-label">Search by new hire name</div>
+        <p class="hire-sub">Type their name as submitted in Workday — we'll find their GSSD ticket automatically.</p>
+        <div class="hire-row">
+          <input class="hire-input" id="hireInput" type="text" placeholder="e.g. Sarah Chen"/>
+          <button class="hire-search-btn" id="searchBtn"><div class="mini-spin"></div><span>Search</span></button>
+        </div>
+        <div class="hire-results" id="hireResults"></div>
+      </div>
+
+      <div class="confirmed-hire" id="confirmedHire">
+        <div>
+          <div class="confirmed-hire-name" id="confirmedName"></div>
+          <div class="confirmed-hire-key" id="confirmedKey"></div>
+        </div>
+        <span class="change-hire" id="changeHireBtn">Change hire</span>
+      </div>
+
+      <div id="submitSection" style="display:none;">
+        <div class="notes-label">Notes / Justification</div>
+        <textarea class="notes-input" id="notesInput" rows="3" placeholder="Briefly explain any additional access requests or special requirements…"></textarea>
+        <div class="submit-row">
+          <button class="submit-btn" id="submitBtn"><div class="btn-spin"></div><span>Step 4 · Post Comment to Jira</span></button>
+          <span class="submit-note">A comment will be added to the GSSD ticket<br>with the selected profile and access details.</span>
+        </div>
+        <div class="toast" id="toast"><span style="font-size:16px;flex-shrink:0;">✅</span><span id="toastMsg"></span></div>
+        <div class="toast-err" id="toastErr"><span style="font-size:16px;flex-shrink:0;">⚠️</span><span id="toastErrMsg"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-title">Available Applications</div>
+  <div class="apps-grid">
+    <div class="app-card"><img class="app-icon" src="https://logo.clearbit.com/slack.com" alt=""/><div><div class="app-card-name">Slack</div><div class="app-card-cat">Messaging</div></div></div>
+    <div class="app-card"><img class="app-icon" src="https://logo.clearbit.com/zoom.us" alt=""/><div><div class="app-card-name">Zoom</div><div class="app-card-cat">Video Conferencing</div></div></div>
+    <div class="app-card"><img class="app-icon" src="https://logo.clearbit.com/atlassian.com" alt=""/><div><div class="app-card-name">Jira</div><div class="app-card-cat">Project Tracking</div></div></div>
+    <div class="app-card"><img class="app-icon" src="https://logo.clearbit.com/confluence.atlassian.com" alt=""/><div><div class="app-card-name">Confluence</div><div class="app-card-cat">Documentation</div></div></div>
+    <div class="app-card"><img class="app-icon" src="https://logo.clearbit.com/google.com" alt=""/><div><div class="app-card-name">Google Workspace</div><div class="app-card-cat">Productivity Suite</div></div></div>
+    <div class="app-card"><img class="app-icon" src="https://logo.clearbit.com/salesforce.com" alt=""/><div><div class="app-card-name">Salesforce</div><div class="app-card-cat">CRM</div></div></div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-title">Need Help?</div>
+  <div class="help-grid">
+    <div class="help-card"><div class="help-card-title">IT Ops Team</div><div class="help-card-body">Reach out on <strong>#it-ops</strong> in Slack or open a ServiceNow ticket.</div></div>
+    <div class="help-card"><div class="help-card-title">New Profile Needed?</div><div class="help-card-body">Contact IT Ops at least <strong>5 business days</strong> before the hire's start date.</div></div>
+    <div class="help-card"><div class="help-card-title">Hire Not Found?</div><div class="help-card-body">Workday submissions take <strong>~1 hour</strong> to generate a GSSD ticket. Check back shortly.</div></div>
+  </div>
+</div>
+
+<footer>© 2026 Sonos, Inc. · Internal IT Operations · <a href="#">Privacy Policy</a> · <a href="#">Acceptable Use</a></footer>
+
+<script>
+(function () {
+  var JIRA_BASE = 'http://localhost:3000/jira/mcp';
+  var activeTeam = 'all';
+  var selCard = null;
+  var profId = null;
+  var profName = null;
+  var profApps = [];
+  var ticketKey = null;
+  var hireName = null;
+
+  function el(id) { return document.getElementById(id); }
+  function lock(id) { el(id).classList.add('locked'); }
+  function unlock(id) { el(id).classList.remove('locked'); }
+
+  // ── Jira via MCP fetch ──
+  function jiraSearch(name, onSuccess, onError) {
+    var jql = 'project = GSSD AND summary ~ "New Prep Request" AND summary ~ "' + name + '" ORDER BY created DESC';
+    fetch(JIRA_BASE + '/rest/api/2/search?jql=' + encodeURIComponent(jql) + '&fields=summary,created&maxResults=10', {
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var results = (data.issues || []).map(function(i) {
+        return { key: i.key, summary: i.fields.summary, created: (i.fields.created || '').slice(0,10) };
+      });
+      onSuccess(results);
+    })
+    .catch(onError);
+  }
+
+  function jiraComment(key, body, onSuccess, onError) {
+    fetch(JIRA_BASE + '/rest/api/2/issue/' + key + '/comment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ body: body })
+    })
+    .then(function(r) {
+      if (!r.ok) return r.json().then(function(e) { throw new Error(e.errorMessages ? e.errorMessages.join(', ') : 'Status ' + r.status); });
+      return r.json();
+    })
+    .then(onSuccess)
+    .catch(onError);
+  }
+
+  // ── Filters ──
+  el('searchInput').addEventListener('input', applyFilters);
+  document.querySelectorAll('.filter-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      activeTeam = this.dataset.team;
+      document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      applyFilters();
+    });
+  });
+
+  function applyFilters() {
+    var q = el('searchInput').value.toLowerCase().trim();
+    var cards = document.querySelectorAll('.role-card[data-team]');
+    var visible = 0;
+    cards.forEach(function(c) {
+      var teamOk = activeTeam === 'all' || c.dataset.team === activeTeam;
+      var searchOk = !q || c.dataset.text.includes(q) || c.dataset.apps.includes(q) ||
+        c.dataset.team.toLowerCase().includes(q) ||
+        c.querySelector('.role-name').textContent.toLowerCase().includes(q) ||
+        c.querySelector('.profile-id').textContent.toLowerCase().includes(q);
+      if (teamOk && searchOk) { c.classList.remove('hidden'); visible++; }
+      else c.classList.add('hidden');
+    });
+    el('resultsCount').textContent = visible + ' profile' + (visible !== 1 ? 's' : '');
+    el('heroCount').textContent = visible;
+    el('emptyState').style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  // ── Step 1 ──
+  document.querySelectorAll('.select-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var card = this.closest('.role-card');
+      if (selCard) { selCard.classList.remove('selected'); selCard.querySelector('.select-btn').textContent = 'Select Profile'; }
+      selCard = card; card.classList.add('selected'); this.textContent = '✓ Selected';
+      profId = card.dataset.id; profName = card.dataset.name; profApps = card.dataset.apps.split(' ');
+      el('pill2id').textContent = profId; el('pill2name').textContent = profName;
+      el('pill2').classList.add('show'); el('hint2').textContent = profId + ' · ' + profName;
+      unlock('panel2'); refreshToggles();
+      lock('panel3'); el('hint3').textContent = 'Complete Steps 1 & 2 to unlock';
+      el('pill3').classList.remove('show'); resetHire();
+      setTimeout(function() { el('panel2').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+    });
+  });
+
+  el('pill2change').addEventListener('click', function() {
+    if (selCard) { selCard.classList.remove('selected'); selCard.querySelector('.select-btn').textContent = 'Select Profile'; }
+    selCard = null; profId = null; profName = null; profApps = [];
+    lock('panel2'); el('pill2').classList.remove('show');
+    lock('panel3'); el('pill3').classList.remove('show');
+    resetHire(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  function refreshToggles() {
+    document.querySelectorAll('#appToggles .app-toggle').forEach(function(t) {
+      var key = t.dataset.app.toLowerCase().replace(/ /g, '-');
+      t.classList.remove('on', 'included'); t.querySelector('.chk').textContent = '';
+      if (profApps.includes(key)) { t.classList.add('included'); t.querySelector('.chk').textContent = ' ✓'; }
+    });
+  }
+
+  document.querySelectorAll('#appToggles .app-toggle').forEach(function(t) {
+    t.addEventListener('click', function() {
+      if (this.classList.contains('included')) return;
+      this.classList.toggle('on');
+      this.querySelector('.chk').textContent = this.classList.contains('on') ? ' ✓' : '';
+    });
+  });
+
+  // ── Step 2 ──
+  el('continueBtn').addEventListener('click', function() {
+    el('pill3id').textContent = profId; el('pill3name').textContent = profName;
+    el('pill3').classList.add('show'); el('hint3').textContent = profId + ' · ' + profName;
+    unlock('panel3');
+    setTimeout(function() { el('panel3').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+  });
+
+  el('pill3change').addEventListener('click', function() {
+    lock('panel3'); el('pill3').classList.remove('show'); resetHire();
+  });
+
+  // ── Step 3 ──
+  el('searchBtn').addEventListener('click', doSearch);
+  el('hireInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') doSearch(); });
+
+  function doSearch() {
+    var q = el('hireInput').value.trim();
+    if (!q) return;
+    var btn = el('searchBtn');
+    btn.querySelector('.mini-spin').style.display = 'block';
+    btn.classList.add('loading'); btn.disabled = true;
+    var res = el('hireResults');
+    res.innerHTML = '<div class="hire-results-msg">Searching Jira…</div>';
+    res.classList.add('show');
+
+    jiraSearch(q, function(results) {
+      btn.querySelector('.mini-spin').style.display = 'none';
+      btn.classList.remove('loading'); btn.disabled = false;
+      if (!results.length) {
+        res.innerHTML = '<div class="hire-results-msg">No "New Prep Request" tickets found for "' + q + '". The Workday submission may still be processing (~1 hour).</div>';
+      } else {
+        res.innerHTML = results.map(function(h) {
+          return '<div class="hire-result-row" data-key="' + h.key + '" data-summary="' + h.summary.replace(/"/g, '&quot;') + '">' +
+            '<div><div class="hire-result-name">' + h.summary + '</div><div class="hire-result-date">Created ' + h.created + '</div></div>' +
+            '<span class="hire-result-key">' + h.key + '</span></div>';
+        }).join('');
+        res.querySelectorAll('.hire-result-row').forEach(function(row) {
+          row.addEventListener('click', function() { confirmHire(this.dataset.key, this.dataset.summary); });
+        });
+      }
+    }, function(err) {
+      btn.querySelector('.mini-spin').style.display = 'none';
+      btn.classList.remove('loading'); btn.disabled = false;
+      res.innerHTML = '<div class="hire-results-msg">Could not reach Jira. (' + err.message + ')</div>';
+    });
+  }
+
+  function confirmHire(key, name) {
+    ticketKey = key; hireName = name;
+    el('lookupSection').style.display = 'none';
+    el('hireResults').classList.remove('show');
+    el('confirmedName').textContent = name;
+    el('confirmedKey').textContent = '🎫 ' + key + ' · GSSD ticket found';
+    el('confirmedHire').classList.add('show');
+    el('submitSection').style.display = 'block';
+  }
+
+  el('changeHireBtn').addEventListener('click', resetHire);
+
+  function resetHire() {
+    ticketKey = null; hireName = null;
+    el('lookupSection').style.display = 'block';
+    el('hireInput').value = '';
+    el('hireResults').classList.remove('show'); el('hireResults').innerHTML = '';
+    el('confirmedHire').classList.remove('show');
+    el('submitSection').style.display = 'none';
+    el('toast').classList.remove('show'); el('toastErr').classList.remove('show');
+  }
+
+  // ── Step 4 ──
+  el('submitBtn').addEventListener('click', function() {
+    if (!ticketKey) return;
+    var notes = el('notesInput').value.trim();
+    var extra = [];
+    document.querySelectorAll('#appToggles .app-toggle.on').forEach(function(t) { extra.push(t.dataset.app); });
+    var stdApps = profApps.map(function(a) { return a.replace(/-/g,' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); }); }).join(', ');
+    var btn = el('submitBtn');
+    btn.classList.add('loading'); btn.disabled = true;
+    el('toast').classList.remove('show'); el('toastErr').classList.remove('show');
+
+    var body =
+      '[External Onboarding Access Update]\n\n' +
+      'New Hire: ' + hireName + '\n' +
+      'Role Profile: ' + profId + ' - ' + profName + '\n' +
+      'Standard Apps: ' + stdApps + '\n' +
+      'Additional Apps Requested: ' + (extra.length ? extra.join(', ') : 'None') + '\n' +
+      'Notes: ' + (notes || 'None') + '\n\n' +
+      'Submitted via Sonos External Onboarding Portal';
+
+    jiraComment(ticketKey, body, function() {
+      var url = 'https://jira.sonos.com/browse/' + ticketKey;
+      el('toastMsg').innerHTML =
+        'Comment posted to <a href="' + url + '" target="_blank"><strong>' + ticketKey + '</strong></a>. IT Ops will provision access shortly.<br><br>' +
+        '<strong>Hire:</strong> ' + hireName + '<br>' +
+        '<strong>Profile:</strong> ' + profId + ' \u2013 ' + profName + '<br>' +
+        '<strong>Standard Apps:</strong> ' + stdApps + '<br>' +
+        '<strong>Extra Apps:</strong> ' + (extra.length ? extra.join(', ') : 'None') + '<br>' +
+        '<strong>Notes:</strong> ' + (notes || 'None');
+      el('toast').classList.add('show');
+      el('notesInput').value = '';
+      document.querySelectorAll('#appToggles .app-toggle.on').forEach(function(t) {
+        t.classList.remove('on'); t.querySelector('.chk').textContent = '';
+      });
+      btn.classList.remove('loading'); btn.disabled = false;
+    }, function(err) {
+      el('toastErr').classList.add('show');
+      el('toastErrMsg').textContent = 'Could not post to Jira: ' + err.message + '. Contact IT Ops on #it-ops.';
+      btn.classList.remove('loading'); btn.disabled = false;
+    });
+  });
+
+})();
+</script>
 </body>
 </html>
