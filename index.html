@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Sonos · External User Onboarding</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+:root{--black:#111;--white:#fff;--g50:#f8f8f6;--g100:#efefed;--g200:#ddddd9;--g400:#9a9a94;--g600:#5a5a55;--accent:#e8480a;--asoft:#fdf0eb;--r:10px;--sh:0 2px 16px rgba(0,0,0,.09);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--g50);color:var(--black);}
+header{background:var(--black);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+.logo{font-weight:700;font-size:20px;color:#fff;letter-spacing:-.5px;}
+.logo-sub{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--g400);border-left:1px solid #333;padding-left:12px;margin-left:12px;}
+.okta{display:flex;align-items:center;gap:7px;background:#1a1a1a;border:1px solid #2e2e2e;border-radius:6px;padding:5px 11px;font-size:12px;color:var(--g400);}
+.okta-dot{width:7px;height:7px;border-radius:50%;background:#00d1b2;}
+.hero{background:var(--black);padding:48px 32px 44px;border-bottom:1px solid #222;text-align:center;}
+.hero h1{font-size:clamp(24px,4vw,38px);font-weight:300;color:#fff;letter-spacing:-.02em;line-height:1.15;}
+.hero h1 strong{font-weight:700;color:var(--accent);}
+.hero p{margin-top:10px;font-size:14px;color:var(--g400);max-width:500px;line-height:1.65;margin-left:auto;margin-right:auto;}
+.stats{display:flex;gap:24px;margin-top:24px;justify-content:center;}
+.stat .n{font-size:26px;font-weight:700;color:#fff;}
+.stat .l{font-size:11px;color:var(--g400);text-transform:uppercase;letter-spacing:.06em;margin-top:3px;}
+/* SCREENS */
+.screen{display:none;padding:60px 32px;flex-direction:column;align-items:center;background:var(--g50);}
+.screen.active{display:flex;}
+.screen h2{font-size:22px;font-weight:600;margin-bottom:8px;text-align:center;}
+.screen p{font-size:14px;color:var(--g400);margin-bottom:36px;text-align:center;}
+.picker{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;width:100%;max-width:900px;margin:0 auto;}
+.pick{width:200px;}
+.pick{background:#fff;border:1.5px solid var(--g200);border-radius:var(--r);padding:28px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:all .2s;font-family:inherit;text-align:center;}
+.pick:hover{border-color:var(--accent);box-shadow:var(--sh);transform:translateY(-2px);}
+.pick-icon{font-size:30px;}
+.pick-name{font-size:14px;font-weight:600;color:var(--black);}
+.pick-count{font-size:12px;color:var(--g400);}
+/* NAV BAR */
+.nav{display:none;align-items:center;gap:8px;padding:13px 32px;background:#fff;border-bottom:1px solid var(--g200);flex-wrap:wrap;}
+.nav.active{display:flex;}
+.nav-btn{display:flex;align-items:center;gap:5px;background:none;border:none;font-size:13px;font-weight:600;color:var(--g600);cursor:pointer;font-family:inherit;padding:0;}
+.nav-btn:hover{color:var(--black);}
+.nav-sep{color:var(--g200);}
+.nav-cur{font-size:13px;font-weight:600;color:var(--black);}
+/* SEARCH */
+.searchbar{display:none;gap:10px;align-items:center;padding:14px 32px;background:#fff;border-bottom:1px solid var(--g200);}
+.searchbar.active{display:flex;}
+.sw{position:relative;flex:1;min-width:180px;max-width:300px;}
+.sw svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--g400);}
+.si{width:100%;padding:8px 12px 8px 32px;border:1.5px solid var(--g200);border-radius:100px;font-size:13px;font-family:inherit;background:var(--g50);outline:none;color:var(--black);}
+.si:focus{border-color:var(--black);background:#fff;}
+.si::placeholder{color:var(--g400);}
+.rc{margin-left:auto;font-size:12px;color:var(--g400);font-weight:500;}
+/* ROLES */
+.rolesview{display:none;max-width:1160px;margin:0 auto;padding:32px 32px 80px;}
+.rolesview.active{display:block;}
+.stitle{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--g400);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.stitle::before{content:'';flex:1;height:1px;background:var(--g200);}
+.stitle::after{content:'';flex:1;height:1px;background:var(--g200);}
+.hr{height:1px;background:var(--g200);margin:40px 0 28px;}
+.grid{display:flex;flex-wrap:wrap;justify-content:center;gap:18px;margin-bottom:48px;}
+/* CARDS */
+.card{background:#fff;border:1.5px solid var(--g200);border-radius:var(--r);display:flex;flex-direction:column;transition:all .2s;overflow:hidden;min-width:320px;max-width:500px;flex:1;}
+.card:hover{border-color:#aaa;box-shadow:var(--sh);}
+.card.hidden{display:none;}
+.card.open{border-color:var(--black);}
+.ch{padding:20px 20px 14px;}
+.ct{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.pid{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g400);margin-bottom:2px;}
+.rn{font-size:15px;font-weight:600;}
+.badge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;padding:3px 8px;border-radius:100px;white-space:nowrap;flex-shrink:0;}
+.b-sw{background:#eef3ff;color:#3a5bd9;}
+.b-fin{background:#e8f9ff;color:#0a7fa0;}
+.b-hr{background:#fff0e8;color:#c45a10;}
+.b-it{background:#f0faf5;color:#2a9d6e;}
+.desc{font-size:13px;color:var(--g600);line-height:1.55;}
+.apill{display:inline-flex;background:var(--g50);border:1px solid var(--g200);border-radius:100px;padding:4px 12px;font-size:12px;font-weight:600;color:var(--g600);margin:0 20px 14px;}
+.toggle{display:flex;align-items:center;justify-content:space-between;padding:11px 20px;border-top:1px solid var(--g100);cursor:pointer;user-select:none;transition:background .15s;}
+.toggle:hover{background:var(--g50);}
+.tlabel{font-size:12px;font-weight:600;color:var(--g600);}
+.tarrow{font-size:10px;color:var(--g400);transition:transform .2s;}
+.card.open .tarrow{transform:rotate(180deg);}
+.alist{display:none;flex-direction:column;border-top:1px solid var(--g100);}
+.card.open .alist{display:flex;}
+.arow{display:flex;align-items:flex-start;gap:10px;padding:9px 20px;border-bottom:1px solid var(--g100);}
+.arow:last-child{border-bottom:none;}
+.arow:hover{background:var(--g50);}
+.adot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:5px;}
+.an{font-size:13px;font-weight:600;min-width:160px;}
+.ad{font-size:12px;color:var(--g400);line-height:1.5;}
+.cfoot{padding:11px 20px;border-top:1px solid var(--g100);display:flex;gap:8px;}
+.cpbtn{flex:1;padding:8px;border-radius:7px;border:1.5px solid var(--g200);background:var(--g50);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--g600);transition:all .15s;}
+.cpbtn:hover{border-color:var(--black);color:var(--black);background:#fff;}
+.cmpbtn{flex:1;padding:8px;border-radius:7px;border:1.5px solid var(--g200);background:var(--g50);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--g600);transition:all .15s;}
+.cmpbtn:hover{border-color:var(--accent);color:var(--accent);}
+.card.cmp-on{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,90,31,.12);}
+.card.cmp-on .cmpbtn{background:var(--accent);color:#fff;border-color:var(--accent);}
+/* COMPARE BAR */
+.cmp-bar{position:fixed;bottom:0;left:0;right:0;background:var(--black);color:#fff;padding:14px 28px;display:flex;align-items:center;justify-content:center;gap:16px;transform:translateY(100%);transition:transform .25s;z-index:200;font-size:13px;}
+.cmp-bar.active{transform:translateY(0);}
+.cmp-bar-label{flex:1;max-width:500px;text-align:center;opacity:.8;}
+.cmp-bar-go{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 22px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+.cmp-bar-go:disabled{opacity:.4;cursor:default;}
+.cmp-bar-clear{background:transparent;color:rgba(255,255,255,.6);border:1.5px solid rgba(255,255,255,.25);border-radius:8px;padding:7px 16px;font-size:13px;cursor:pointer;font-family:inherit;}
+/* COMPARE MODAL */
+.cmp-overlay{display:none;position:fixed;inset:0;background:#fff;z-index:300;overflow-y:auto;}
+.cmp-overlay.active{display:block;}
+.cmp-hd{background:var(--black);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1;}
+.cmp-hd h2{color:#fff;font-size:16px;font-weight:600;}
+.cmp-close{background:transparent;border:1.5px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:7px 18px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;}
+.cmp-body{padding:32px;max-width:1100px;margin:0 auto;}
+.cmp-names{display:grid;grid-template-columns:180px 1fr 1fr;gap:0;margin-bottom:0;}
+.cmp-tbl{width:100%;border-collapse:collapse;font-size:13px;}
+.cmp-tbl th{padding:12px 16px;text-align:left;background:var(--g50);border:1px solid var(--g200);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--g600);}
+.cmp-tbl th.cmp-th-role{font-size:13px;text-transform:none;letter-spacing:0;color:var(--black);}
+.cmp-tbl th .cmp-pid{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g400);margin-bottom:2px;}
+.cmp-tbl td{padding:10px 16px;border:1px solid var(--g200);vertical-align:top;color:var(--g600);}
+.cmp-tbl td.app-name{font-weight:600;color:var(--black);background:var(--g50);}
+.cmp-tbl tr.only-left td{background:#fff8f5;}
+.cmp-tbl tr.only-right td{background:#f5f8ff;}
+.cmp-tbl tr.only-left td.app-name{background:#ffede4;color:var(--accent);}
+.cmp-tbl tr.only-right td.app-name{background:#e8eeff;color:#3b5bdb;}
+.cmp-tbl td.missing{color:var(--g200);text-align:center;font-size:18px;}
+.cmp-legend{display:flex;gap:20px;margin-bottom:20px;font-size:12px;align-items:center;}
+.cmp-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+.cmp-dot-shared{background:var(--g100);}
+.cmp-dot-left{background:#ffede4;}
+.cmp-dot-right{background:#e8eeff;}
+.empty{display:none;grid-column:1/-1;text-align:center;padding:56px 20px;color:var(--g400);font-size:14px;}
+/* HOW TO */
+.howto{background:#fff;border:1.5px solid var(--g200);border-radius:var(--r);overflow:hidden;margin-bottom:28px;}
+.howto-hd{background:var(--black);padding:18px 22px;text-align:center;}
+.howto-hd h2{font-size:15px;font-weight:600;color:#fff;}
+.steps{display:flex;flex-wrap:wrap;justify-content:center;}
+.step{padding:18px 22px;border-right:1px solid var(--g100);border-bottom:1px solid var(--g100);min-width:210px;flex:1;}
+.step:last-child{border-right:none;}
+.snum{width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:9px;}
+.stit{font-size:13px;font-weight:600;margin-bottom:3px;}
+.sdesc{font-size:12px;color:var(--g600);line-height:1.55;}
+.help{display:flex;gap:12px;flex-wrap:wrap;}
+.hcard{background:#fff;border:1.5px solid var(--g200);border-radius:var(--r);padding:18px 20px;flex:1;min-width:200px;text-decoration:none;color:inherit;display:block;transition:all .2s;}
+a.hcard:hover{border-color:#aaa;box-shadow:var(--sh);transform:translateY(-2px);cursor:pointer;}
+.htit{font-weight:600;font-size:14px;margin-bottom:5px;}
+.hbody{font-size:13px;color:var(--g600);line-height:1.6;}
+.hbody a{color:var(--accent);text-decoration:none;font-weight:600;}
+.hbody strong{color:var(--black);}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--black);color:#fff;padding:9px 20px;border-radius:100px;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999;}
+.toast.show{opacity:1;}
+footer{background:var(--black);color:var(--g400);text-align:center;font-size:12px;padding:24px 32px;}
+footer a{color:var(--accent);text-decoration:none;}
+</style>
+</head>
+<body>
+<header>
+  <div style="display:flex;align-items:center;">
+    <span class="logo">SONOS</span>
+    <span class="logo-sub">External Onboarding</span>
+  </div>
+  <div class="okta"><div class="okta-dot"></div>Okta SSO Active</div>
+</header>
+<div class="hero">
+  <h1>External User<br><strong>Access Catalog</strong></h1>
+  <p>Find the right role profile for your external hire. Each profile lists the exact applications provisioned on day one.</p>
+</div>
+<!-- SCREEN 1: ORG PICKER -->
+<div class="screen active" id="s-org">
+  <h2>Which team are you hiring for?</h2>
+  <p>Select a team to see the available role profiles and their application access.</p>
+  <div class="picker">
+    <button class="pick" data-action="org" data-org="Finance">
+      <span class="pick-icon">📊</span><span class="pick-name">Finance</span><span class="pick-count">2 profiles</span>
+    </button>
+    <button class="pick" data-action="org" data-org="HR">
+      <span class="pick-icon">🤝</span><span class="pick-name">HR</span><span class="pick-count">1 profile</span>
+    </button>
+    <button class="pick" data-action="it-picker" data-org="IT">
+      <span class="pick-icon">🖥️</span><span class="pick-name">Information Technology</span><span class="pick-count">9 sub-teams</span>
+    </button>
+    <button class="pick" data-action="sw-picker">
+      <span class="pick-icon">💻</span><span class="pick-name">Software</span><span class="pick-count">4 sub-teams</span>
+    </button>
+    <button class="pick" data-action="product-picker">
+      <span class="pick-icon">📦</span><span class="pick-name">Product</span><span class="pick-count">3 sub-teams</span>
+    </button>
+  </div>
+</div>
+<!-- SCREEN 2: IT SUB-TEAM PICKER -->
+<div class="screen" id="s-it">
+  <h2>Information Technology</h2>
+  <p>Select a sub-team to see its role profiles.</p>
+  <div class="picker">
+    <button class="pick" data-action="org" data-org="IT-Data"><span class="pick-icon">📈</span><span class="pick-name">Data</span><span class="pick-count">2 profiles</span></button>
+    <button class="pick" data-action="org" data-org="IT-GlobalOps"><span class="pick-icon">🌐</span><span class="pick-name">Global IT Operations</span><span class="pick-count">1 profile</span></button>
+    <button class="pick" data-action="org" data-org="IT-Web"><span class="pick-icon">🌍</span><span class="pick-name">Web</span><span class="pick-count">3 profiles</span></button>
+    <button class="pick" data-action="org" data-org="IT-FET"><span class="pick-icon">🚀</span><span class="pick-name">First Experience Technology</span><span class="pick-count">2 profiles</span></button>
+    <button class="pick" data-action="org" data-org="IT-PCT"><span class="pick-icon">🔧</span><span class="pick-name">Productivity, Collaboration & Technology</span><span class="pick-count">2 profiles</span></button>
+    <button class="pick" data-action="org" data-org="IT-Infra"><span class="pick-icon">🏗️</span><span class="pick-name">Infrastructure</span><span class="pick-count">1 profile</span></button>
+    <button class="pick" data-action="org" data-org="IT-MET"><span class="pick-icon">📢</span><span class="pick-name">Marketing Enablement Technology</span><span class="pick-count">Coming soon</span></button>
+    <button class="pick" data-action="org" data-org="IT-EA"><span class="pick-icon">🏢</span><span class="pick-name">Enterprise Applications</span><span class="pick-count">1 profile</span></button>
+    <button class="pick" data-action="org" data-org="IT-Sec"><span class="pick-icon">🔒</span><span class="pick-name">Security</span><span class="pick-count">1 profile</span></button>
+  </div>
+</div>
+<!-- SCREEN 3: SOFTWARE SUB-TEAM PICKER -->
+<div class="screen" id="s-sw">
+  <h2>Software</h2>
+  <p>Select a sub-team to see its role profiles.</p>
+  <div class="picker">
+    <button class="pick" data-action="org" data-org="SW-Player"><span class="pick-icon">🎵</span><span class="pick-name">Software Player Platform</span><span class="pick-count">1 profile</span></button>
+    <button class="pick" data-action="org" data-org="SW-Services"><span class="pick-icon">☁️</span><span class="pick-name">Software Services Platform</span><span class="pick-count">Coming soon</span></button>
+    <button class="pick" data-action="org" data-org="SW-Control"><span class="pick-icon">📱</span><span class="pick-name">Software Control Platform</span><span class="pick-count">1 profile</span></button>
+    <button class="pick" data-action="org" data-org="SW-Delivery"><span class="pick-icon">🚀</span><span class="pick-name">Software Delivery & Operations</span><span class="pick-count">9 profiles</span></button>
+  </div>
+</div>
+<!-- SCREEN 3b: PRODUCT SUB-TEAM PICKER -->
+<div class="screen" id="s-product">
+  <h2>Product</h2>
+  <p>Select a sub-team to see its role profiles.</p>
+  <div class="picker">
+    <button class="pick" data-action="jdm-picker"><span class="pick-icon">🤝</span><span class="pick-name">JDM Partners</span><span class="pick-count">5 sub-teams</span></button>
+    <button class="pick" data-action="org" data-org="PROD-Mech"><span class="pick-icon">⚙️</span><span class="pick-name">Mechanical Engineering</span><span class="pick-count">Coming soon</span></button>
+    <button class="pick" data-action="org" data-org="PROD-Compliance"><span class="pick-icon">📋</span><span class="pick-name">Compliance</span><span class="pick-count">Coming soon</span></button>
+  </div>
+</div>
+<!-- SCREEN 4: JDM PARTNERS PICKER -->
+<div class="screen" id="s-jdm">
+  <h2>JDM Partners</h2>
+  <p>Select a partner to see its role profiles.</p>
+  <div class="picker">
+    <button class="pick" data-action="org" data-org="SW-JDM-Luxshare"><span class="pick-icon">🏭</span><span class="pick-name">Luxshare</span><span class="pick-count">1 profile</span></button>
+    <button class="pick" data-action="org" data-org="SW-JDM-Synaptics"><span class="pick-icon">🔬</span><span class="pick-name">Synaptics</span><span class="pick-count">Coming soon</span></button>
+    <button class="pick" data-action="org" data-org="SW-JDM-Agest"><span class="pick-icon">⚙️</span><span class="pick-name">Agest</span><span class="pick-count">Coming soon</span></button>
+    <button class="pick" data-action="org" data-org="SW-JDM-GGEC"><span class="pick-icon">🔌</span><span class="pick-name">GGEC</span><span class="pick-count">1 profile</span></button>
+    <button class="pick" data-action="org" data-org="SW-JDM-Above"><span class="pick-icon">🌐</span><span class="pick-name">Above.se</span><span class="pick-count">1 profile</span></button>
+  </div>
+</div>
+<!-- NAV BAR -->
+<div class="nav" id="nav">
+  <button class="nav-btn" id="nav-back">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    <span id="nav-back-label">Change team</span>
+  </button>
+  <span class="nav-sep">|</span>
+  <span class="nav-cur" id="nav-cur"></span>
+</div>
+<!-- SEARCH BAR -->
+<div class="searchbar" id="searchbar">
+  <div class="sw">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="si" id="si" placeholder="Search role or app…"/>
+  </div>
+  <span class="rc" id="rc"></span>
+</div>
+<!-- ROLES VIEW -->
+<div class="rolesview" id="rolesview">
+  <div class="stitle">Role Profiles</div>
+  <div class="grid" id="grid">
+    <!-- ══════ FINANCE ══════ -->
+    <div class="card" data-org="Finance" data-s="finance operations center oc auxis ext-fin-02">
+      <div class="ch">
+        <div class="ct"><div><div class="pid">EXT-FIN-02</div><div class="rn">Finance Operations Center (OC)</div></div><span class="badge b-fin">Finance</span></div>
+        <p class="desc">Finance Operations Center contractors supporting financial close, audit, travel, and ERP processes via SAP, FloQast, Concur, and AuditBoard.</p>
+      </div>
+      <div class="apill">12 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest · #ask-erp · #erp-hypercare-ptp · #help-accountspayable · #travel-expense · #help-auxis · #team-the-oc</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">Video Conferencing</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Backstage</span><span class="ad">Contractor Portal</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Concur</span><span class="ad">Travel & Expense</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Auditboard</span><span class="ad">Audit Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">Project Tracking</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Egencia</span><span class="ad">External Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">FloQast</span><span class="ad">Financial Close Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">SAP</span><span class="ad">Production Access</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">CloudPC</span><span class="ad">Win365-AZNET-SC-SAP · Win365-4x16-License-Full</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">Spaces via AD group G-FIN-AUXIS-All</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Lucid Suite</span><span class="ad">Editor access</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-FIN-02">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="Finance" data-s="fit data analyst finance ext-fin-03">
+      <div class="ch">
+        <div class="ct"><div><div class="pid">EXT-FIN-03</div><div class="rn">FIT: Data Analyst</div></div><span class="badge b-fin">Finance</span></div>
+        <p class="desc">Finance IT Data Analyst with access to BI and analytics tooling including Tableau, MicroStrategy, Snowflake, and SAP. CloudPC Windows VM is provisioned automatically at onboarding.</p>
+      </div>
+      <div class="apill">13 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">Documentation</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">G-Suite</span><span class="ad">Google Workspace</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">Project Tracking</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Lucid</span><span class="ad">Diagramming & Collaboration</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">MicroStrategy</span><span class="ad">Business Intelligence</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Panopto</span><span class="ad">Video Learning</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Salesforce</span><span class="ad">CRM</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">SAP</span><span class="ad">ERP</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Snowflake</span><span class="ad">Data Warehouse</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Tableau</span><span class="ad">Data Visualization</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Windows 365 – CloudPC</span><span class="ad">Provisioned automatically via Okta Role group</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">Video Conferencing</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-FIN-03">Copy Role Info</button></div>
+    </div>
+    <!-- ══════ HR ══════ -->
+    <div class="card" data-org="HR" data-s="hr shared services operations ext-hr-02">
+      <div class="ch">
+        <div class="ct"><div><div class="pid">EXT-HR-02</div><div class="rn">HR Shared Services & Operations</div></div><span class="badge b-hr">HR</span></div>
+        <p class="desc">External HR Shared Services staff supporting recruiting, people operations, and HR systems. Includes Workday (3 environments), Beamery, SAP, and several apps requiring manual provisioning.</p>
+      </div>
+      <div class="apill">19 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest · #hr-shared-services · help-exl</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Visier</span><span class="ad">G-SSO-Visier-Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Glint</span><span class="ad">G-SSO-Glint-Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Google Workspace</span><span class="ad">Productivity Suite</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">Spaces: PSH (Edit), SGLO (View), NIIERP (View)</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">Projects: HRSD</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Beamery</span><span class="ad">Talent CRM</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">SAP</span><span class="ad">Production Access</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Docebo</span><span class="ad">Learning Management System</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">CloudPC</span><span class="ad">Win365-4x16-License-Limited · Win365-AZNET-USEast-Data</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Workday Production</span><span class="ad">Manual provisioning via People Team</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Workday Sandbox</span><span class="ad">Manual provisioning via People Team</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Workday Preview</span><span class="ad">Manual provisioning via People Team</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Sterling</span><span class="ad">Manual provisioning via People Team</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">LinkedIn Recruiter</span><span class="ad">Manual provisioning via People Team</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Seekout</span><span class="ad">Manual provisioning via People Team</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">CoderPad</span><span class="ad">Manual provisioning via People Team</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">DocuSign</span><span class="ad">Manual provisioning via People Team</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">e-Verify</span><span class="ad">Manual provisioning via People Team</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-HR-02">Copy Role Info</button></div>
+    </div>
+    <!-- ══════ IT PLACEHOLDERS ══════ -->
+    <div class="card" data-org="IT-Data" data-s="digital leader engineer general access ciandt data it panopto salesforce zoom boomi confluence jira cloudpc aws testrail artifactory zuora demandware swagger slack ext-it-da-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-IT-DA-01</div><div class="rn">Digital Leader/Engineer – General Access</div></div><span class="badge b-it">IT · Data</span></div><p class="desc">CI&T Digital Leaders and Engineers in the IT Data org. Access includes CloudPC, integration tooling (Boomi, Swagger, Salesforce), and several restricted and manually provisioned apps requiring ticket approval.</p></div>
+      <div class="apill">15 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Slack Connect via CI&T Slack org · Contact @Andriza Bianchini dos Santos to add user</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">G-SSO-Zoom-User</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Panopto</span><span class="ad">R-SSO-Panopto-Contractors</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Salesforce</span><span class="ad">G-SSO-Salesforce-CIT</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Boomi</span><span class="ad">G-SSO-Boomi-CTLConsultants</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">!OKTA – Confluence Non-Employee</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">!Okta – Jira Non-Employee</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Swagger</span><span class="ad">R-SG-Swagger-Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">CloudPC</span><span class="ad">Win365-4x16-License-Limited · Win365-AZNET-BRA-Data</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">General AD Groups</span><span class="ad">G-data-ciandt-all · G-ODS-CITSQL · G-SSO-BTQueue-QA-Users · G-WWW-DB-RW</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS IS ⚠ Restricted</span><span class="ad">Needs approval in ticket · R-SSO-AWS-IS-Sandbox-Customer · R-SSO-AWS-IS-Dev-Customer · Approvers: @Jeff Williams, @Josh Logan</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">TestRail ⚠ Restricted</span><span class="ad">Needs approval in ticket · R-SSO-TestRail · Approver: @Chris Putman</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">R-ciandt-leaders ⚠ Restricted</span><span class="ad">Needs approval in ticket · Approver: @Andriza Bianchini dos Santos</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Artifactory ⚠ Restricted</span><span class="ad">Needs approval in ticket · OKTA: Artifactory – Users · Approver: Suhi Kumarachandran</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zuora · Manual</span><span class="ad">Tag @Matt Dal Zuffo in the CIT Account Slack channel to request access</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Demandware · Manual</span><span class="ad">Tag @Jon Lindemann in the CIT Account Slack channel to request access</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-IT-DA-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="IT-Data" data-s="data platform engineer dpe snowflake astronomer fivetran monte carlo census sonarqube aws confluence jira artifactory cloudpc zoom slack github copilot tableau 1password neongold ext-it-da-02">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-IT-DA-02</div><div class="rn">Data Platform Engineer</div></div><span class="badge b-it">IT · Data</span></div><p class="desc">Data Platform Engineers building and managing Sonos's data infrastructure. Broad stack including Snowflake, Astronomer, Fivetran, Monte Carlo, and GitHub Copilot, with restricted AWS data access.</p></div>
+      <div class="apill">19 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi-channel guest · #team-data-all · #team-data-platform · #dpe-alerts-data · #dpe-alerts-data-test · #dpe-alerts-infra · #dpe-alerts-infra-test · #help-data-platforms</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">G-SSO-Zoom</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">!Okta – Confluence Non-Employee-User · Space: Data @ Sonos</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">!Okta – Jira Non-Employee-User · Projects: DPLAT · DATA · DATALH · + !AD – Jira Service Desk Agents</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Artifactory</span><span class="ad">Artifactory – Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">CloudPC</span><span class="ad">Win365-4x16-License-Limited · Win365-AZNET-USEast-Data</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS IS</span><span class="ad">G-SSO-AWS-IS-Prod-ReadOnly</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS Data ⚠ Restricted</span><span class="ad">R-SG-AWS-Data-Prod-AdminNonDestructive · R-SG-AWS-Data-Dev-AdminNonDestructive · AWS – Data Dev – dataplatform_adminDestructive</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">SonarQube</span><span class="ad">SonarQube Prod – Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Census</span><span class="ad">Census – Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Monte Carlo ⚠ Restricted</span><span class="ad">Monte Carlo – Viewers · Needs approval</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Fivetran ⚠ Restricted</span><span class="ad">Fivetran – R – Users · Needs approval</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Snowflake</span><span class="ad">SNOWFLAKE_DATA_PLATFORM_ENGINEER</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Astronomer</span><span class="ad">Astronomer Cloud-R-Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Tableau</span><span class="ad">Access TBD — confirm with team</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub + Copilot</span><span class="ad">Repos TBD — confirm all DPE repos with team</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">1Password</span><span class="ad">Access TBD — confirm with team</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Neongold ⚠ Restricted</span><span class="ad">R-SSO-Neongold · Needs approval</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">General AD Groups</span><span class="ad">Vendor-dependent: G-External-EXL (Panopto + Atlassian) or G-data-ciandt-all or G-Spinnaker-All · G-ODS-DataServicesSQL · G-SharedDev-DataAnalysts · R-G-DataDW-RO</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-IT-DA-02">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="IT-GlobalOps" data-s="it support engineer global it operations mindtree confluence jira slack zoom snipeit google workspace zuora o365 adobe box gotoassist salesforce intune jamf okta amazon shi ext-it-gops-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-IT-GOPS-01</div><div class="rn">IT Support Engineer</div></div><span class="badge b-it">IT · Global Ops</span></div><p class="desc">External IT Support Engineers (e.g. MindTree) providing end-user support across helpdesk, device management, and SaaS tools. Several admin-level tools (Intune, JAMF, Okta) require manual provisioning after onboarding.</p></div>
+      <div class="apill">17 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Via MindTree Employees OKTA group · Admin upgrade: @Joe Kalafut</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">Via MindTree Employees OKTA group</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">Via MindTree Employees OKTA group · !Okta – Confluence Non-Employee Users · G-Mindtree-Jira-Confluence</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">Via MindTree Employees OKTA group · !Okta – JIRA Non-Employee Users · !AD – Jira Service Desk Agents · GSSD Queue: @Benjamin Blanchette</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Snipe-IT</span><span class="ad">Via MindTree Employees OKTA group · Admin upgrade: @Robin Lundberg</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Google Workspace</span><span class="ad">Via MindTree Employees OKTA group · GSuite Admin upgrade: @Joe Kalafut</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zuora</span><span class="ad">Via MindTree Employees OKTA group · G-SSO-Zuora-Users · Radio HD Subscription access: manual</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">O365</span><span class="ad">G-SSO-O365-Support-Limited</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Adobe</span><span class="ad">G-SSO-Adobe-Users · Admin upgrade: @Mark Wurtzburg</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Box</span><span class="ad">G-SSO-Box-Admin</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GoToAssist</span><span class="ad">G-SSO-GoToAssist-IT-Support · Admin upgrade: @Joe Kalafut</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Salesforce</span><span class="ad">G-SSO-Salesforce-Dashboard</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Intune · Manual Admin</span><span class="ad">Admin upgrade required · @Isaac Beadle Ramirez</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">JAMF · Manual Admin</span><span class="ad">Admin upgrade required</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Okta · Manual Admin</span><span class="ad">Admin upgrade required · @Joe Kalafut</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Amazon · Manual</span><span class="ad">For handling Purchasing Requests · @Isaac Beadle Ramirez</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">SHI · Manual</span><span class="ad">For handling Purchasing Requests · @Isaac Beadle Ramirez</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-IT-GOPS-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="IT-Web" data-s="web cloud developer vercel aws workspaces jira confluence github ext-it-web-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-IT-WEB-01</div><div class="rn">Web Cloud Developer</div></div><span class="badge b-it">IT · Web</span></div><p class="desc">External Web Cloud Developers with access to AWS Workspaces, Vercel deployment, GitHub, Jira, and Confluence Cloud. AWS Workspace is provisioned via a privileged Okta account.</p></div>
+      <div class="apill">5 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">AWS Workspaces</span><span class="ad">AWS-Workspaces AD group · Provision via Workspaces-Create tool (privileged OKTA account) · Attach PDF to GSSD ticket</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Vercel</span><span class="ad">Vercel – R – Developer</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">!Okta – JIRA Non-Employee Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">General collaborator · sonos-web-app-press-duke repo only · Invite via @Kim Weiss or @Joe Kalafut · G-External-Web Cloud Developer</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence Cloud</span><span class="ad">Guest invite to contractor email (@ciant.com, @mindtree.com etc) · Add to EXT-Web Cloud Developer group · Follow non-Sonos-email invite steps</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-IT-WEB-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="IT-Web" data-s="web front end engineer vercel artifactory akamai figma salesforce aws workspaces zoom jira confluence github testrail ext-it-web-02">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-IT-WEB-02</div><div class="rn">Web Front-End Engineer</div></div><span class="badge b-it">IT · Web</span></div><p class="desc">External Web Front-End Engineers with a broad stack including Vercel, Akamai, Figma, TestRail, and AWS. Confluence and GitHub access depend on whether the user has a Sonos email address.</p></div>
+      <div class="apill">13 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">AWS Workspaces</span><span class="ad">AWS-Workspaces AD group · Linux Workspace likely needed · Tag @Joe Kalafut, @Benjamin Blanchette, or @Isaac Beadle Ramirez to set up</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">G-SSO-Zoom</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Vercel</span><span class="ad">Vercel – R – Developer</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Artifactory</span><span class="ad">Artifactory – Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">!Okta – JIRA Non-Employee Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence Cloud</span><span class="ad">With Sonos email: full access · add to required spaces · Without Sonos email: guest invite (@ciant.com / @mindtree.com) · add to EXT-Web Cloud Developer group · grant WEB space via Manage Spaces</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">With Sonos email: G-SSO-Github AD group · Without: invite personal account as external collaborator · confirm repos with @Kim Weiss or @Joe Kalafut</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">TestRail</span><span class="ad">R-SSO-Testrail · R-SSO-TestRail</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Akamai</span><span class="ad">G-SSO-Akamai-Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS IS Dev</span><span class="ad">R-SSO-AWS-IS-Dev-Customer</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS PI</span><span class="ad">R-SSO-AWS-PI-495185192553-CIandT-Sonos-Web-Team · R-SSO-AWS-PI-869538861521-CIandT-Sonos-Web-Team</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Figma</span><span class="ad">G-SSO-Figma-Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Salesforce</span><span class="ad">G-SSO-Salesforce-B2BSales</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-IT-WEB-02">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="IT-Web" data-s="qa automation engineer web zoom testrail akamai aws figma salesforce zuora confluence jira cloudpc artifactory postman vercel sanity sonarqube docker demandware cybersource github slack ext-it-web-03">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-IT-WEB-03</div><div class="rn">QA Automation Engineer</div></div><span class="badge b-it">IT · Web</span></div><p class="desc">External Web QA Automation Engineers with a full testing stack including TestRail, Postman, SonarQube, Akamai, and Zuora. Account credentials must be sent to #CIT-CONTRACTORS-ACCOUNT-INFORMATION after provisioning.</p></div>
+      <div class="apill">20 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi-channel guest · CI&T resource: tag @Joe Kalafut for Slack Connect · #web-qa · #team-web-dev · #squad-web-platform · #squad-web-ux · #team-web-announce · #ext-cit-web-qa-reports</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">G-SSO-Zoom</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">!Okta – Confluence Non-Employee-User · G-External-EXL-QA-Automation</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">!Okta – Jira Non-Employee-User · !AD – Jira Service Desk Agents</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">External collaborator invite · PI-Web-QA group · Repos: pi-web-automation-test · pi-web-py-api-test · pi-devops-vault-client · pi-web-performance-testing · sonos-web-app-www · pi-web-app-www-commerce-cloud · Tag @Kim Weiss or @Joe Kalafut</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">CloudPC</span><span class="ad">Win365-4x16-License-Limited · Win365-AZNET-USEast-Data</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Artifactory</span><span class="ad">Artifactory – Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">TestRail</span><span class="ad">R-SSO-Testrail · R-SSO-TestRail</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Akamai</span><span class="ad">G-SSO-Akamai-Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS IS Dev</span><span class="ad">R-SSO-AWS-IS-Dev-Customer</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS PI</span><span class="ad">R-SSO-AWS-PI-495185192553-CIandT-Sonos-Web-Team · R-SSO-AWS-PI-869538861521-CIandT-Sonos-Web-Team</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Figma</span><span class="ad">G-SSO-Figma-Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Salesforce</span><span class="ad">G-SSO-Salesforce-B2BSales</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zuora</span><span class="ad">G-SSO-Zuora-Dev-Users · G-SSO-Zuora-QA-Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Postman</span><span class="ad">R-SG-Postman-User</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Vercel</span><span class="ad">Vercel – R – Viewer</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Sanity</span><span class="ad">Okta-Sanity-Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">SonarQube</span><span class="ad">SonarQube Prod – Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Docker Hub</span><span class="ad">Docker Hub – Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Demandware & Cybersource · Manual</span><span class="ad">No group permission · Tag @Jon Lindemann in ticket to set up</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-IT-WEB-03">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="IT-FET" data-s="fet qa engineer confluence docker meraki figma github gsuite jira lucidchart panopto slack sonarqube testrail zoom ext-it-fet-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-IT-FET-01</div><div class="rn">FET – QA Engineer</div></div><span class="badge b-it">IT · FET</span></div><p class="desc">First Experience Technology QA Engineers. Testing tools include TestRail, SonarQube, Docker, and Meraki Dashboard. GitHub repos must be listed in the access request; username format is firstlastvendor.</p></div>
+      <div class="apill">13 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi-channel guest</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">Video Conferencing</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">Documentation</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">Project Tracking</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">List required repos in prep request · Username scheme: firstlastvendor (e.g. JohnSmithOrion)</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Google Workspace</span><span class="ad">G-Suite</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Figma</span><span class="ad">Design & Prototyping</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">LucidChart</span><span class="ad">Diagramming</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Panopto</span><span class="ad">Video Learning</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">TestRail</span><span class="ad">Test Case Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">SonarQube</span><span class="ad">Code Quality Analysis</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Docker</span><span class="ad">Container Platform</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">FET – Meraki Dashboard</span><span class="ad">Network Management</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-IT-FET-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="IT-FET" data-s="fet development engineer docker sonarqube lucid miro jira confluence vercel aws figma zoom panopto github slack ext-it-fet-02">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-IT-FET-02</div><div class="rn">FET – Development Engineer</div></div><span class="badge b-it">IT · FET</span></div><p class="desc">First Experience Technology Development Engineers. Includes front-end tooling (Vercel, Figma, Miro) and engineering tools (Docker Hub, SonarQube, AWS IS Sandbox). GitHub access via external collaborator invite to 6 repos.</p></div>
+      <div class="apill">13 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi-channel guest · Channels TBD by hiring manager · CI&T users: Slack Connect, no invite needed</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">G-SSO-Zoom-User</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">With Sonos email: add to EXT-FET-Engineer group · Without: guest invite (@ciant.com / @mindtree.com) + EXT-FET-Engineer group + WEB space via Manage Spaces</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">!Okta – JIRA Non-Employee Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">External collaborator · Tag @Joe Kalafut · Repos: fet-retail-insights · fet-soundstage · fet-dashboard · fet-soundassist · dtc-tool · dtc-FieldDay</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Vercel</span><span class="ad">Vercel – R – Developer</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Figma</span><span class="ad">G-SSO-Figma-Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Panopto</span><span class="ad">R-SSO-Panopto-Contractors</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Lucid Suite</span><span class="ad">Editor access</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Miro</span><span class="ad">Collaborative Whiteboard</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Docker Hub</span><span class="ad">Docker Hub – Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">SonarQube</span><span class="ad">SonarQube Prod – Tech-FET – Admin</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS IS Sandbox</span><span class="ad">R-SSO-AWS-IS-Sandbox-Customer</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-IT-FET-02">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="IT-PCT" data-s="gsuite google workspace administrator productivity collaboration technology 1password atlassian jira confluence slack zoom panopto miro vpn xdr snipeit wiz site24x7 microsoft pagerduty intune cloudpc azure github ext-it-pct-02">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-IT-PCT-02</div><div class="rn">Google Workspace Administrator</div></div><span class="badge b-it">IT · PCT</span></div><p class="desc">External Google Workspace administrators with broad IT admin access including Intune, AzureAD, O365, and Cloud PC administration. Includes XDR, Wiz, and Site24x7 for security and infrastructure monitoring.</p></div>
+      <div class="apill">22 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">1Password</span><span class="ad">Password Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">PCT · IT-People-Productivity · Change Access · Service Desk Agent Group · GSSD</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">ITKB · PCT</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Sonos.com Mail/Calendar</span><span class="ad">Email & Calendar Access</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">Video Conferencing</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Panopto</span><span class="ad">Video Learning</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Miro</span><span class="ad">Collaborative Whiteboard</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">VPN (Cisco AnyConnect)</span><span class="ad">Network Access</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">XDR Console</span><span class="ad">Endpoint Detection & Response</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">SnipeIt</span><span class="ad">Asset Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Wiz</span><span class="ad">Cloud Security</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Site24x7</span><span class="ad">Monitoring & Alerting</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Microsoft E3</span><span class="ad">Microsoft 365 Suite</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">PagerDuty</span><span class="ad">Incident Alerting</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Intune Device Admin</span><span class="ad">Privileged — Device Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Cloud PC Admin</span><span class="ad">Privileged — CloudPC Administration</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">O365 Admin</span><span class="ad">Privileged — Possible limited to view to start</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AzureAD Admin</span><span class="ad">Privileged — Limited to device admin</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Active Directory</span><span class="ad">Sufficient privilege to handle AD Devices, Users, and GPO viewing</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">it-cse-intune · it-cse-intune-applications · it-cse-cse2jira · it-cse-mdm-snipe · it-cse-weekly-reporting</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-IT-PCT-02">Copy Role Info</button></div>
+    </div>
+    <!-- FIX: restored missing opening card div for EXT-IT-PCT-01 -->
+    <div class="card" data-org="IT-PCT" data-s="client systems engineer endpoint management productivity collaboration technology 1password atlassian jira confluence slack zoom panopto miro vpn xdr snipeit wiz site24x7 microsoft pagerduty intune cloudpc azure github ext-it-pct-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-IT-PCT-01</div><div class="rn">Client Systems Engineer</div></div><span class="badge b-it">IT · PCT</span></div><p class="desc">External client systems engineers managing endpoints, devices, and IT productivity tooling. Includes Intune, AzureAD, O365 admin access, XDR console, and SnipeIT for asset management.</p></div>
+      <div class="apill">22 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">1Password</span><span class="ad">Password Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">PCT · IT-People-Productivity · Change Access · Service Desk Agent Group · GSSD</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">ITKB · PCT</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Sonos.com Mail/Calendar</span><span class="ad">Email & Calendar Access</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">Video Conferencing</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Panopto</span><span class="ad">Video Learning</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Miro</span><span class="ad">Collaborative Whiteboard</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">VPN (Cisco AnyConnect)</span><span class="ad">Network Access</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">XDR Console</span><span class="ad">Endpoint Detection & Response</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">SnipeIt</span><span class="ad">Asset Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Wiz</span><span class="ad">Cloud Security</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Site24x7</span><span class="ad">Monitoring & Alerting</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Microsoft E3</span><span class="ad">Microsoft 365 Suite</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">PagerDuty</span><span class="ad">Incident Alerting</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Intune Device Admin</span><span class="ad">Privileged — Device Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Cloud PC Admin</span><span class="ad">Privileged — CloudPC Administration</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">O365 Admin</span><span class="ad">Privileged — Possible limited to view to start</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AzureAD Admin</span><span class="ad">Privileged — Limited to device admin</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Active Directory</span><span class="ad">Sufficient privilege to handle AD Devices, Users, and GPO viewing</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">it-cse-intune · it-cse-intune-applications · it-cse-cse2jira · it-cse-mdm-snipe · it-cse-weekly-reporting</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-IT-PCT-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="IT-Infra" data-s="seto infrastructure engineer it jira confluence atlassian devo sonarqube artifactory lucidchart aws github jenkins zoom slack ext-it-infra-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-IT-INFRA-01</div><div class="rn">SETO – Infrastructure Engineer</div></div><span class="badge b-it">IT · Infrastructure</span></div><p class="desc">External SETO Infrastructure Engineers supporting network and platform engineering. Includes Devo SIEM, AWS, Jenkins, infrastructure-as-code tooling, and CloudPC via Win365.</p></div>
+      <div class="apill">17 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest · #help-exl</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">!Okta – Jira Non-Employee Users · PIIE Project</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">!Okta – Confluence Non-Employee Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Atlassian – EXT – SETO – Infra</span><span class="ad">Atlassian Group Access</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Devo</span><span class="ad">Infra/Net Engineering</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">PI IAC Access</span><span class="ad">Infrastructure as Code</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">SonarQube Prod</span><span class="ad">Code Quality Analysis</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Windows 365 – CloudPC</span><span class="ad">Win365-4x16-License-Limited</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Google Workspace</span><span class="ad">Okta – G Suite Non Employees</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Artifactory</span><span class="ad">Reader access</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">LucidChart</span><span class="ad">Viewer access</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Site 24x7</span><span class="ad">G-SSO-Site24x7-Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS IS</span><span class="ad">R-SSO-AWS-IS-Prod-Customer · R-SSO-AWS-IS-Dev-Customer · R-SSO-AWS-IS-Sandbox-Customer</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jenkins</span><span class="ad">Group TBD — check with IT Ops</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">G-SSO-Zoom-User</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">github.com/Sonos-Inc/sonos-pi-ie-agentic-ai · firstlastvendor scheme</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-IT-INFRA-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="IT-EA" data-s="technical program manager functional consultants enterprise applications sap zoom lucidchart confluence jira cloudpc slack ext-it-ea-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-IT-EA-01</div><div class="rn">Technical Program Manager & Functional Consultants</div></div><span class="badge b-it">IT · Enterprise Apps</span></div><p class="desc">External Technical Program Managers and Functional Consultants in Enterprise Applications. Core tooling includes SAP for ERP coordination, Jira, Confluence, and CloudPC.</p></div>
+      <div class="apill">7 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest · #ASK-ERP · #ERP_PLT · Invite via @kandbgc.com or @us.dynpro.com</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">G-SSO-Zoom</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">G-KBGC-All (AD) · Spaces: NIIERP · PI · Technology · External users: invite via Confluence Cloud + add to ext-kbgc-all group</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">!Okta – Jira Non Employee-User · !AD – Jira Service Desk Agents</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">SAP</span><span class="ad">R-SG-SAP-Prod-Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">CloudPC</span><span class="ad">Win365-4x16-License-Limited · Win365-AZNET-IND-SAP</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Lucidchart</span><span class="ad">G-SSO-Lucidchart-Viewer</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-IT-EA-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="IT-Sec" data-s="soc analyst security devo siem cortex ext-it-sec-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-IT-SEC-01</div><div class="rn">SOC Analyst</div></div><span class="badge b-it">IT · Security</span></div><p class="desc">External SOC Analysts in IT Security. Access provisioned to Devo (SIEM) and Cortex (XDR) for security monitoring and incident response.</p></div>
+      <div class="apill">2 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Devo</span><span class="ad">SIEM Admins</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Cortex</span><span class="ad">Security Admin</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-IT-SEC-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="IT-MET" data-s="it marketing enablement technology"><div class="ch"><div class="ct"><div><div class="pid">EXT-IT-MET</div><div class="rn">Marketing Enablement Technology</div></div><span class="badge b-it">IT · MET</span></div><p class="desc">Role guide coming soon.</p></div><div class="apill">— apps</div><div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div><div class="alist"><div class="arow"><div class="adot"></div><span class="an">Coming soon</span><span class="ad">Role guide being configured</span></div></div><div class="cfoot"><button class="cpbtn" data-id="EXT-IT-MET">Copy Role Info</button></div></div>
+    <!-- ══════ SOFTWARE PLACEHOLDERS ══════ -->
+    <div class="card" data-org="SW-Player" data-s="quality assurance qa agest software player platform jira confluence figma testrail slack ext-sw-pp-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-SW-PP-01</div><div class="rn">Quality Assurance</div></div><span class="badge b-sw">SW · Player</span></div><p class="desc">Agest-sourced QA contractors on the Software Player Platform team. Access includes Jira, Confluence, Figma, and Slack. TestRail access requires approval in the provisioning ticket.</p></div>
+      <div class="apill">5 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi-channel guest · See Okta & Okta Verify & CloudPC Documentation for setup</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">!Ad – Jira-External-Users · g-agest-all</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">!Ad – Confluence-External-Users · g-agest-all</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Figma</span><span class="ad">G-SSO-Figma-Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">TestRail ⚠ Restricted</span><span class="ad">R-SSO-Testrail · Needs approval in ticket</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-SW-PP-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="SW-Services" data-s="software services platform cloud backend ext-sw-services"><div class="ch"><div class="ct"><div><div class="pid">EXT-SW-SERVICES</div><div class="rn">Software Services Platform</div></div><span class="badge b-sw">SW · Services</span></div><p class="desc">Role guide coming soon.</p></div><div class="apill">— apps</div><div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div><div class="alist"><div class="arow"><div class="adot"></div><span class="an">Coming soon</span><span class="ad">Role guide being configured</span></div></div><div class="cfoot"><button class="cpbtn" data-id="EXT-SW-SERVICES">Copy Role Info</button></div></div>
+    <div class="card" data-org="SW-JDM-Luxshare" data-s="jdm partner engineer luxshare ext-sw-jdm-lux-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-SW-JDM-LUX-01</div><div class="rn">JDM Partner Engineer – Luxshare</div></div><span class="badge b-sw">JDM · Luxshare</span></div><p class="desc">Luxshare partner engineers with access to the LUX Confluence Cloud space, Jira via Okta, and Slack DUKE project channels. All access flows through the G-Ext-Lux AD group.</p></div>
+      <div class="apill">4 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Active Directory</span><span class="ad">G-Ext-Lux</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">OKTA</span><span class="ad">!Okta – Jira Non-Employee Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence Cloud</span><span class="ad">LUX Confluence Cloud space · via g-ext-lux AD group</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Slack (DUKE)</span><span class="ad">ext-sonos-lux-duke-me · ext-sonos-lux-duke-pm</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-SW-JDM-LUX-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="SW-JDM-Synaptics" data-s="synaptics jdm partners"><div class="ch"><div class="ct"><div><div class="pid">EXT-SW-SYNAPTICS</div><div class="rn">Synaptics</div></div><span class="badge b-sw">JDM · Synaptics</span></div><p class="desc">Role guide coming soon.</p></div><div class="apill">— apps</div><div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div><div class="alist"><div class="arow"><div class="adot"></div><span class="an">Coming soon</span><span class="ad">Role guide being configured</span></div></div><div class="cfoot"><button class="cpbtn" data-id="EXT-SW-SYNAPTICS">Copy Role Info</button></div></div>
+    <div class="card" data-org="SW-JDM-Agest" data-s="agest jdm partners"><div class="ch"><div class="ct"><div><div class="pid">EXT-SW-AGEST</div><div class="rn">Agest</div></div><span class="badge b-sw">JDM · Agest</span></div><p class="desc">Role guide coming soon.</p></div><div class="apill">— apps</div><div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div><div class="alist"><div class="arow"><div class="adot"></div><span class="an">Coming soon</span><span class="ad">Role guide being configured</span></div></div><div class="cfoot"><button class="cpbtn" data-id="EXT-SW-AGEST">Copy Role Info</button></div></div>
+    <div class="card" data-org="SW-JDM-GGEC" data-s="jdm partner engineer ggec ext-sw-jdm-ggec-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-SW-JDM-GGEC-01</div><div class="rn">JDM Partner Engineer – GGEC</div></div><span class="badge b-sw">JDM · GGEC</span></div><p class="desc">GGEC partner engineers with AppStream 2.0 for virtual desktop access, Confluence Cloud as guest, and Slack project channels. All access flows through the G-ext-ggec AD group.</p></div>
+      <div class="apill">5 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Active Directory</span><span class="ad">G-External-JDM-Partner · G-ext-ggec · G-SSO-Arena-Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">OKTA</span><span class="ad">!Okta – Jira Non-Employee Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Amazon AppStream 2.0</span><span class="ad">ME NX AP NE – Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence Cloud</span><span class="ad">Guest invite · ext-jdm-partner group · GGEC profile checked</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi-channel guest (@ggec.com) · #help-ggec · #team-ggec-general · #ext-ggec-case</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-SW-JDM-GGEC-01">Copy Role Info</button></div>
+    </div>
+    <!-- ══════ JDM · ABOVE.SE ══════ -->
+    <div class="card" data-org="SW-JDM-Above" data-s="jdm partner engineer above.se above ext-sw-jdm-above-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-SW-JDM-ABOVE-01</div><div class="rn">JDM Partner Engineer – Above.se</div></div><span class="badge b-sw">JDM · Above.se</span></div><p class="desc">Above.se partner engineers with AppStream 2.0, Confluence Cloud (guest via ext-above-partner group), and Slack. Contact the hiring manager for the current Slack channel list.</p></div>
+      <div class="apill">4 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Active Directory</span><span class="ad">G-ME-WC-Users · R-SSO-Arena</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">OKTA</span><span class="ad">Amazon AppStream 2.0 – ME NX EU West · !Okta – Jira Non-Employee Users</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence Cloud</span><span class="ad">Guest invite · ext-above-partner group · X profile checked</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Ask hiring manager for updated channel list</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-SW-JDM-ABOVE-01">Copy Role Info</button></div>
+    </div>
+    <!-- ══════ PRODUCT · MECHANICAL ENGINEERING ══════ -->
+    <div class="card" data-org="PROD-Mech" data-s="mechanical engineering product prod-mech"><div class="ch"><div class="ct"><div><div class="pid">EXT-PROD-MECH</div><div class="rn">Mechanical Engineering</div></div><span class="badge b-sw">Product · Mech Eng</span></div><p class="desc">Role guide coming soon.</p></div><div class="apill">— apps</div><div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div><div class="alist"><div class="arow"><div class="adot"></div><span class="an">Coming soon</span><span class="ad">Role guide being configured</span></div></div><div class="cfoot"><button class="cpbtn" data-id="EXT-PROD-MECH">Copy Role Info</button></div></div>
+    <!-- ══════ PRODUCT · COMPLIANCE ══════ -->
+    <div class="card" data-org="PROD-Compliance" data-s="compliance product prod-compliance"><div class="ch"><div class="ct"><div><div class="pid">EXT-PROD-COMP</div><div class="rn">Compliance</div></div><span class="badge b-sw">Product · Compliance</span></div><p class="desc">Role guide coming soon.</p></div><div class="apill">— apps</div><div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div><div class="alist"><div class="arow"><div class="adot"></div><span class="an">Coming soon</span><span class="ad">Role guide being configured</span></div></div><div class="cfoot"><button class="cpbtn" data-id="EXT-PROD-COMP">Copy Role Info</button></div></div>
+    <!-- ══════ SOFTWARE DELIVERY & OPERATIONS ══════ -->
+    <div class="card" data-org="SW-Delivery" data-s="release manager software delivery ext-sw-rm-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-SW-RM-01</div><div class="rn">Release Manager</div></div><span class="badge b-sw">Software</span></div><p class="desc">Software Delivery release managers overseeing release pipelines and cross-team coordination. Access includes Jenkins, Secure Jenkins, Artifactory, Optimizely feature flagging, and internal release admin tooling.</p></div>
+      <div class="apill">10 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Artifactory</span><span class="ad">Artifact Repository</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">SSDL · SD · Release Handoffs</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">Code Repository · firstlastvendor scheme</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jenkins</span><span class="ad">G-SSO-PD-EngX-Release · G-SSO-PD-PnP-Content_Personalization</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">ENGX · XTEST · SWPBL</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Optimizely</span><span class="ad">Feature Flagging</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Release Admin Apps</span><span class="ad">Internal Release Tooling</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Secure Jenkins</span><span class="ad">R-SSO-PD-SecureJenkins-Admin</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">Video Conferencing</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-SW-RM-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="SW-Delivery" data-s="release engineer software delivery ext-sw-re-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-SW-RE-01</div><div class="rn">Release Engineer</div></div><span class="badge b-sw">Software</span></div><p class="desc">Software Delivery release engineers supporting deployment pipelines and infrastructure. Access includes Kubernetes, AWS IAM, PagerDuty on-call, SonarQube, and release admin tooling.</p></div>
+      <div class="apill">13 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Artifactory</span><span class="ad">Artifact Repository</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS IAM Identity Center – PD</span><span class="ad">dev-developer · devops-dev-developer · plx-developer · plx-tools-developer · production-developer · release-manager · staging-developer</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">SSDL · SD · Release Handoffs</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">Code Repository · firstlastvendor scheme</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">ENGX · XTEST · SWPBL</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Kubernetes</span><span class="ad">Dev · PD Prod</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Optimizely</span><span class="ad">Feature Flagging</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">PagerDuty</span><span class="ad">Incident Alerting</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Release Admin Apps</span><span class="ad">Internal Release Tooling</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Secure Jenkins</span><span class="ad">R-SSO-PD-SecureJenkins-Admin</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">SonarQube</span><span class="ad">Code Quality Analysis</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">Video Conferencing</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-SW-RE-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="SW-Delivery" data-s="data engineer product data team cloudpc ext-sw-de-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-SW-DE-01</div><div class="rn">Data Engineer</div></div><span class="badge b-sw">Software</span></div><p class="desc">Product Data Team engineers building and maintaining data pipelines. Stack includes Snowflake, Astronomer, Monte Carlo, Tableau, Kubernetes, and CloudPC with AWS access.</p></div>
+      <div class="apill">18 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Artifactory</span><span class="ad">Artifact Repository</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Astronomer</span><span class="ad">Airflow Orchestration</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS IAM Identity Center – PD</span><span class="ad">dev-developer · dev-readonly · devops-dev-developer · plx-developer · production-readonly</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS IS</span><span class="ad">IS Dev ReadOnly · IS Prod ReadOnly</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS Data</span><span class="ad">Dev AdminNonDestructive · Prod AdminNonDestructive</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">CloudPC</span><span class="ad">Assigned by default for this role</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">SD · SSDL</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Data Disco</span><span class="ad">Data Discovery</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">Code Repository · firstlastvendor scheme</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">ENGX · SWPBL · PDTI</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Kubernetes Dev PD</span><span class="ad">Dev Environment</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Monte Carlo</span><span class="ad">Data Observability</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">PagerDuty</span><span class="ad">Incident Alerting</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Secure Jenkins</span><span class="ad">G-IT-ServiceOperationsTeam · G-SSO-PD-EngX-DataInsight · G-SSO-PD-PLT-Performance</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Snowflake</span><span class="ad">Role: PRODUCT_DATA_DOMAIN_OWNER</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Tableau</span><span class="ad">Viewer access by default</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">Video Conferencing</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-SW-DE-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="SW-Delivery" data-s="analytics engineer product data team cloudpc ext-sw-ae-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-SW-AE-01</div><div class="rn">Analytics Engineer</div></div><span class="badge b-sw">Software</span></div><p class="desc">Product Data Team analytics engineers focused on data modeling and business intelligence. Stack includes Snowflake, Tableau, Astronomer, Monte Carlo data observability, and CloudPC.</p></div>
+      <div class="apill">14 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Artifactory</span><span class="ad">Artifact Repository</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Astronomer</span><span class="ad">Airflow Orchestration</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS IAM Identity Center – PD</span><span class="ad">dev-developer · dev-readonly · devops-dev-developer · plx-developer · production-readonly</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">CloudPC</span><span class="ad">Assigned by default for this role</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">SD · SSDL</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Data Disco</span><span class="ad">Data Discovery</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">Code Repository · firstlastvendor scheme</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">ENGX · SWPBL · PDTI</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Monte Carlo</span><span class="ad">Data Observability</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">PagerDuty</span><span class="ad">Incident Alerting</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Snowflake</span><span class="ad">Role: PRODUCT_DATA_DOMAIN_OWNER</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Tableau</span><span class="ad">Viewer access by default</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">Video Conferencing</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-SW-AE-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="SW-Delivery" data-s="data analyst product data team ext-sw-da-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-SW-DA-01</div><div class="rn">Data Analyst</div></div><span class="badge b-sw">Software</span></div><p class="desc">Product Data Team analyst role. Full app access list is being configured — check back soon.</p></div>
+      <div class="apill">— apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">More apps coming soon</span><span class="ad">Check back shortly</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-SW-DA-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="SW-Delivery" data-s="test engineer system test ext-sw-te-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-SW-TE-01</div><div class="rn">Test Engineer</div></div><span class="badge b-sw">Software</span></div><p class="desc">Agest-sourced System Test Team engineers with a comprehensive observability and testing stack including TestRail, Datadog, Sentry, Nirvana, and OpenSearch. No VDI required — engineers typically receive their own machines.</p></div>
+      <div class="apill">21 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">1Password</span><span class="ad">Password Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Artifactory</span><span class="ad">Artifact Repository</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Automation Prod Jenkins</span><span class="ad">CI/CD Automation</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS</span><span class="ad">dev-developer · dev-readonly · instaclustr-dev-readonly · IS Dev ReadOnly · PD Costdown Users · plx-developer · production-developer · production-readonly · staging-developer · staging-readonly</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">SSDL · SD · Roundhouse · Product Development – UX</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Data Disco</span><span class="ad">Data Discovery</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Datadog</span><span class="ad">Monitoring & Observability</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">Code Repository · firstlastvendor scheme</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jenkins</span><span class="ad">AutomationProdJenkins</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">SWPBL · ENGX · DUKE · RND · CP · PMA · PWA · SHERLOC</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">LucidChart</span><span class="ad">Viewer license by default</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Nirvana</span><span class="ad">Internal Tooling</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Nirvana Test</span><span class="ad">Test Environment</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Panopto</span><span class="ad">Video Learning</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">PDSW OpenSearch</span><span class="ad">Search & Analytics</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Sentry</span><span class="ad">Error Tracking</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Snowflake</span><span class="ad">Viewer license by default</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Tableau</span><span class="ad">Viewer license by default</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">TestRail</span><span class="ad">Test Case Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">Video Conferencing</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-SW-TE-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="SW-Delivery" data-s="cloud engineer engineering productivity ext-sw-ce-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-SW-CE-01</div><div class="rn">Cloud Engineer</div></div><span class="badge b-sw">Software</span></div><p class="desc">Engineering Productivity Team. Linux VM provided through AWS Workspaces.</p></div>
+      <div class="apill">18 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">1Password</span><span class="ad">Password Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Akamai</span><span class="ad">CDN & Security</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Artifactory</span><span class="ad">Artifact Repository</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS IAM Identity Center – PD</span><span class="ad">dev-developer · dev-readonly · devops-dev-developer · devops-tools-developer · devops-tools-readonly · instaclustr-dev-readonly · plx-tools-developer · production-developer · production-readonly · staging-developer · staging-readonly</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">SD · SSDL</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Datadog</span><span class="ad">Monitoring & Observability</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">Code Repository · firstlastvendor scheme</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jenkins</span><span class="ad">PnP Content · PD-DevOps · PINT Partner Services · PnP Platform · PLT Dev Portal · EngX DataInsights · PLT Performance · PnP Integration · SVE Device</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">PDOPS · ENGX</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Kubernetes</span><span class="ad">Prod – DevOps · Dev – PD · Dev – DevOps · Stage – PD · Prod – PD</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">LucidChart</span><span class="ad">Viewer license by default</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Nirvana</span><span class="ad">Internal Tooling</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">PagerDuty</span><span class="ad">Incident Alerting</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Panopto</span><span class="ad">Video Learning</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Secret Server</span><span class="ad">Secrets Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Tableau</span><span class="ad">Viewer license by default</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">Video Conferencing</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-SW-CE-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="SW-Delivery" data-s="embedded test engineer engineering productivity ext-sw-ete-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-SW-ETE-01</div><div class="rn">Embedded Test Engineer</div></div><span class="badge b-sw">Software</span></div><p class="desc">Engineering Productivity embedded test engineers validating hardware and firmware integrations. Full testing stack includes TestRail, Nirvana, Sentry, and OpenSearch with AWS Dev and Costdown access.</p></div>
+      <div class="apill">21 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">1Password</span><span class="ad">Password Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Artifactory</span><span class="ad">Artifact Repository</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AutomationProdJenkins</span><span class="ad">CI/CD Automation</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS IS Dev</span><span class="ad">IS Dev Environment</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWSPDCostdown</span><span class="ad">Cost Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS IAM Identity Center – PD</span><span class="ad">dev-developer · dev-readonly · instaclustr-dev-readonly · plx-developer · production-developer · production-readonly · staging-developer · staging-readonly</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">SD · SSDL</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Data Disco</span><span class="ad">Data Discovery</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">Code Repository · firstlastvendor scheme</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">SWPBL · ENGX · DUKE · RND</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">LucidChart</span><span class="ad">Viewer access by default</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Nirvana</span><span class="ad">Internal Tooling</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Nirvana Test</span><span class="ad">Test Environment</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Panopto</span><span class="ad">Video Learning</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">PDSW OpenSearch</span><span class="ad">Search & Analytics</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Sentry</span><span class="ad">Error Tracking</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Snowflake</span><span class="ad">Viewer access by default</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Tableau</span><span class="ad">Viewer access by default</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">TestRail</span><span class="ad">Test Case Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">Video Conferencing</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-SW-ETE-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="SW-Delivery" data-s="embedded automation engineer engineering productivity ext-sw-eae-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-SW-EAE-01</div><div class="rn">Embedded Automation Engineer</div></div><span class="badge b-sw">Software</span></div><p class="desc">Engineering Productivity embedded automation engineers building hardware test automation. Includes ArgoCD, Grafana Cloud, Datadog, Docker Hub, and Nirvana test tooling. Requires a physical Linux machine as a test runner.</p></div>
+      <div class="apill">23 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">1Password</span><span class="ad">Password Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">ArgoCD</span><span class="ad">SVE Services Dev USE1 · SVE Services Prod USE1 · SVE Services Prod USW2 · SVE Studio Dev · SVE Studio Prod</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Artifactory</span><span class="ad">Artifact Repository</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Automation Prod Jenkins</span><span class="ad">CI/CD Automation</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">AWS IAM Identity Center – PD</span><span class="ad">dev-developer · dev-readonly · instaclustr-dev-readonly · plx-developer · production-developer · production-readonly · staging-developer · staging-readonly</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">SD · SSDL</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Data Disco</span><span class="ad">Data Discovery</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Datadog</span><span class="ad">Monitoring & Observability</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Docker Hub</span><span class="ad">Container Registry</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">GitHub</span><span class="ad">Code Repository · firstlastvendor scheme</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Grafana Cloud – Perf</span><span class="ad">Performance Monitoring</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">SWPBL · ENGX · DUKE · RND</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">LucidChart</span><span class="ad">Viewer access by default</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Nirvana</span><span class="ad">Internal Tooling</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Nirvana Test</span><span class="ad">Test Environment</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Panopto</span><span class="ad">Video Learning</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">PDSW OpenSearch</span><span class="ad">Search & Analytics</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Sentry</span><span class="ad">Error Tracking</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Snowflake</span><span class="ad">Viewer access by default</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Tableau</span><span class="ad">Viewer access by default</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">TestRail</span><span class="ad">Test Case Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">Video Conferencing</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-SW-EAE-01">Copy Role Info</button></div>
+    </div>
+    <div class="card" data-org="SW-Control" data-s="product development orion ext-sw-pd-01">
+      <div class="ch"><div class="ct"><div><div class="pid">EXT-SW-PD-01</div><div class="rn">Product Development</div></div><span class="badge b-sw">Software</span></div><p class="desc">Product Development contractors (Orion) on the Software Control Platform team. Access includes design tools (Figma, Miro), engineering tooling (Kubernetes, SonarQube, Artifactory), and testing tools (TestRail, Nirvana). No VDI required.</p></div>
+      <div class="apill">17 apps</div>
+      <div class="toggle"><span class="tlabel">View all apps</span><span class="tarrow">▼</span></div>
+      <div class="alist">
+        <div class="arow"><div class="adot"></div><span class="an">Slack</span><span class="ad">Multi Channel Guest</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Artifactory</span><span class="ad">Reader license by default</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Confluence</span><span class="ad">SD · SSDL · UX-CS · PDKB · Passport</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Figma</span><span class="ad">Design & Prototyping</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">G-Suite</span><span class="ad">Google Workspace</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Jira</span><span class="ad">PMA · SWPBL · PWA · SHERLOC · ENGX · BETAENG</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Kubernetes</span><span class="ad">Dev</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Lucid Suite</span><span class="ad">Editor access</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Miro</span><span class="ad">Collaborative Whiteboard</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Nirvana</span><span class="ad">Internal Tooling</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Nirvana Test</span><span class="ad">Test Environment</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Panopto</span><span class="ad">Video Learning</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Sentry</span><span class="ad">Error Tracking</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">SnipeIT</span><span class="ad">SQA access</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">SonarQube</span><span class="ad">Code Quality Analysis</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">TestRail</span><span class="ad">Test Case Management</span></div>
+        <div class="arow"><div class="adot"></div><span class="an">Zoom</span><span class="ad">Video Conferencing</span></div>
+      </div>
+      <div class="cfoot"><button class="cpbtn" data-id="EXT-SW-PD-01">Copy Role Info</button></div>
+    </div>
+    <div class="empty" id="empty">No profiles match your search.</div>
+  </div>
+  <div class="hr"></div>
+  <div class="stitle">How to Submit an Access Request</div>
+  <div class="howto">
+    <div class="howto-hd"><h2>Once you've found the right profile, here's how to get access provisioned</h2></div>
+    <div class="steps">
+      <div class="step"><div class="snum">1</div><div class="stit">Complete Workday Onboarding</div><div class="sdesc">Submit the new hire request in Workday. A GSSD ticket is auto-generated within ~1 hour.</div></div>
+      <div class="step"><div class="snum">2</div><div class="stit">Note the Profile ID</div><div class="sdesc">Find the right profile above and note its ID (e.g. EXT-SW-TE-01).</div></div>
+      <div class="step"><div class="snum">3</div><div class="stit">Submit the Request</div><div class="sdesc">Add a comment to the GSSD ticket with the profile ID and any additional apps needed.</div></div>
+      <div class="step"><div class="snum">4</div><div class="stit">Access Provisioned</div><div class="sdesc">IT Ops provisions all apps via Okta within 1 business day.</div></div>
+    </div>
+  </div>
+  <div class="hr"></div>
+  <div class="stitle">Need Help?</div>
+  <div class="help">
+    <a class="hcard" href="https://helpcenter.sonos.com" target="_blank"><div class="htit">Submit a Request</div><div class="hbody">Comment on your GSSD ticket with the profile ID.</div></a>
+    <a class="hcard" href="https://sonos.slack.com/archives/C052GF0FD" target="_blank"><div class="htit">Contact IT Ops</div><div class="hbody">Reach the team on <strong>#Infra-IT</strong> in Slack for urgent requests.</div></a>
+    <div class="hcard"><div class="htit">Access Reviews</div><div class="hbody">All external access reviewed <strong>quarterly</strong>.</div></div>
+    <a class="hcard" href="https://helpcenter.sonos.com" target="_blank"><div class="htit">New Profile Needed?</div><div class="hbody">Contact IT Ops at least <strong>5 business days</strong> before the hire's start date.</div></a>
+  </div>
+</div>
+<!-- COMPARE BAR -->
+<div class="cmp-bar" id="cmp-bar">
+  <button class="cmp-bar-clear" id="cmp-clear">Clear</button>
+  <span class="cmp-bar-label" id="cmp-label">Select a role to compare</span>
+  <button class="cmp-bar-go" id="cmp-go" disabled>Compare</button>
+</div>
+<!-- COMPARE OVERLAY -->
+<div class="cmp-overlay" id="cmp-overlay">
+  <div class="cmp-hd">
+    <h2>Role Comparison</h2>
+    <button class="cmp-close" id="cmp-close">✕ Close</button>
+  </div>
+  <div class="cmp-body">
+    <div class="cmp-legend">
+      <div class="cmp-dot cmp-dot-shared"></div><span>In both roles</span>
+      <div class="cmp-dot cmp-dot-left"></div><span id="cmp-legend-left">Only in Role 1</span>
+      <div class="cmp-dot cmp-dot-right"></div><span id="cmp-legend-right">Only in Role 2</span>
+    </div>
+    <table class="cmp-tbl" id="cmp-tbl"></table>
+  </div>
+</div>
+<div class="toast" id="toast">Role info copied to clipboard</div>
+<footer>© 2026 Sonos, Inc. · Internal IT Operations · <a href="#">Privacy Policy</a> · <a href="#">Acceptable Use</a></footer>
+<script>
+(function(){
+  var curOrg = null;
+  function show(screenId){
+    ['s-org','s-it','s-sw','s-product','s-jdm'].forEach(function(id){
+      var el = document.getElementById(id);
+      el.classList.remove('active');
+    });
+    var nav = document.getElementById('nav');
+    var sb  = document.getElementById('searchbar');
+    var rv  = document.getElementById('rolesview');
+    nav.classList.remove('active');
+    sb.classList.remove('active');
+    rv.classList.remove('active');
+    if(screenId === 'org'){
+      document.getElementById('s-org').classList.add('active');
+      curOrg = null;
+    } else if(screenId === 'it'){
+      document.getElementById('s-it').classList.add('active');
+      nav.classList.add('active');
+      document.getElementById('nav-back-label').textContent = 'Change team';
+      document.getElementById('nav-cur').textContent = 'Information Technology';
+      curOrg = 'IT';
+    } else if(screenId === 'sw'){
+      document.getElementById('s-sw').classList.add('active');
+      nav.classList.add('active');
+      document.getElementById('nav-back-label').textContent = 'Change team';
+      document.getElementById('nav-cur').textContent = 'Software';
+      curOrg = 'SW';
+    } else if(screenId === 'product'){
+      document.getElementById('s-product').classList.add('active');
+      nav.classList.add('active');
+      document.getElementById('nav-back-label').textContent = 'Change team';
+      document.getElementById('nav-cur').textContent = 'Product';
+      curOrg = 'PROD';
+    } else if(screenId === 'jdm'){
+      document.getElementById('s-jdm').classList.add('active');
+      nav.classList.add('active');
+      document.getElementById('nav-back-label').textContent = 'Back to Product sub-teams';
+      document.getElementById('nav-cur').textContent = 'JDM Partners';
+      curOrg = 'JDM';
+    } else {
+      // show roles
+      nav.classList.add('active');
+      sb.classList.add('active');
+      rv.classList.add('active');
+    }
+  }
+  function showRoles(org, label){
+    curOrg = org;
+    var backLabel = org.startsWith('IT-') ? 'Back to IT sub-teams' : org.startsWith('SW-JDM-') ? 'Back to JDM Partners' : org.startsWith('SW-') ? 'Back to Software sub-teams' : org.startsWith('PROD-') ? 'Back to Product sub-teams' : 'Change team';
+    document.getElementById('nav-back-label').textContent = backLabel;
+    document.getElementById('nav-cur').textContent = label;
+    document.getElementById('si').value = '';
+    show('roles');
+    filterCards(org, '');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  // Org picker buttons
+  document.querySelectorAll('.pick').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var action = this.dataset.action;
+      var org    = this.dataset.org;
+      var name   = this.querySelector('.pick-name').textContent;
+      if(action === 'it-picker'){
+        show('it');
+        window.scrollTo({top:0,behavior:'smooth'});
+      } else if(action === 'sw-picker'){
+        show('sw');
+        window.scrollTo({top:0,behavior:'smooth'});
+      } else if(action === 'product-picker'){
+        show('product');
+        window.scrollTo({top:0,behavior:'smooth'});
+      } else if(action === 'jdm-picker'){
+        show('jdm');
+        window.scrollTo({top:0,behavior:'smooth'});
+      } else {
+        showRoles(org, name);
+      }
+    });
+  });
+  // Back button
+  document.getElementById('nav-back').addEventListener('click', function(){
+    if(curOrg && curOrg.startsWith('IT-')){
+      show('it');
+    } else if(curOrg && curOrg.startsWith('SW-JDM-')){
+      show('jdm');
+    } else if(curOrg && curOrg.startsWith('SW-')){
+      show('sw');
+    } else if(curOrg === 'JDM'){
+      show('product');
+    } else if(curOrg && curOrg.startsWith('PROD-')){
+      show('product');
+    } else {
+      show('org');
+    }
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+  // Search
+  document.getElementById('si').addEventListener('input', function(){
+    filterCards(curOrg, this.value.toLowerCase().trim());
+  });
+  function filterCards(org, q){
+    var cards = document.querySelectorAll('.card[data-org]');
+    var n = 0;
+    cards.forEach(function(c){
+      var orgOk    = !org || c.dataset.org === org;
+      var searchOk = !q   || c.dataset.s.includes(q) || c.querySelector('.rn').textContent.toLowerCase().includes(q);
+      if(orgOk && searchOk){ c.classList.remove('hidden'); n++; }
+      else                  { c.classList.add('hidden'); }
+    });
+    document.getElementById('rc').textContent = n + ' profile' + (n !== 1 ? 's' : '');
+    document.getElementById('heroCount').textContent = n;
+    document.getElementById('empty').style.display = n === 0 ? 'block' : 'none';
+  }
+  // Expand/collapse
+  document.querySelectorAll('.toggle').forEach(function(t){
+    t.addEventListener('click', function(){
+      var c = this.closest('.card'), o = c.classList.contains('open');
+      c.classList.toggle('open');
+      this.querySelector('.tlabel').textContent = o ? 'View all apps' : 'Hide apps';
+    });
+  });
+  // Copy role text
+  function fallbackCopy(text){
+    var t = document.createElement('textarea');
+    t.value = text;
+    t.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0;';
+    document.body.appendChild(t);
+    t.focus(); t.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(t);
+  }
+  document.querySelectorAll('.cpbtn').forEach(function(b){
+    b.addEventListener('click', function(){
+      var card = this.closest('.card');
+      var pid  = card.querySelector('.pid').textContent;
+      var rn   = card.querySelector('.rn').textContent;
+      var desc = card.querySelector('.desc') ? card.querySelector('.desc').textContent : '';
+      var apps = [];
+      card.querySelectorAll('.arow').forEach(function(row){
+        var name   = row.querySelector('.an').textContent;
+        var detail = row.querySelector('.ad').textContent;
+        apps.push('• ' + name + (detail ? ' – ' + detail : ''));
+      });
+      var text = 'Role Profile: ' + pid + ' – ' + rn + '\n\n' + desc + '\n\nApps:\n' + apps.join('\n');
+      var toast = document.getElementById('toast');
+      if(navigator.clipboard && window.isSecureContext){
+        navigator.clipboard.writeText(text).then(function(){
+          toast.classList.add('show');
+          setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+        }).catch(function(){
+          fallbackCopy(text);
+          toast.classList.add('show');
+          setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+        });
+      } else {
+        fallbackCopy(text);
+        toast.classList.add('show');
+        setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+      }
+    });
+  });
+  // Deep link
+  var p = new URLSearchParams(location.search).get('profile');
+  if(p){
+    document.querySelectorAll('.card').forEach(function(c){
+      if(c.querySelector('.pid') && c.querySelector('.pid').textContent === p){
+        var org   = c.dataset.org;
+        var label = c.querySelector('.rn').textContent;
+        showRoles(org, label);
+        c.classList.add('open');
+        c.querySelector('.tlabel').textContent = 'Hide apps';
+        setTimeout(function(){ c.scrollIntoView({behavior:'smooth',block:'center'}); }, 300);
+      }
+    });
+  }
+  // Init
+  show('org');
+
+  // ── COMPARE FEATURE ──────────────────────────────────────
+  var cmpSelected = [];
+
+  // Inject compare button into every real card
+  document.querySelectorAll('.card[data-org]').forEach(function(card){
+    var foot = card.querySelector('.cfoot');
+    if(!foot) return;
+    var btn = document.createElement('button');
+    btn.className = 'cmpbtn';
+    btn.textContent = '+ Compare';
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var idx = cmpSelected.indexOf(card);
+      if(idx > -1){
+        cmpSelected.splice(idx,1);
+        card.classList.remove('cmp-on');
+        btn.textContent = '+ Compare';
+      } else {
+        if(cmpSelected.length >= 2){
+          var removed = cmpSelected.shift();
+          removed.classList.remove('cmp-on');
+          removed.querySelector('.cmpbtn').textContent = '+ Compare';
+        }
+        cmpSelected.push(card);
+        card.classList.add('cmp-on');
+        btn.textContent = '✓ Selected';
+      }
+      updateCmpBar();
+    });
+    foot.appendChild(btn);
+  });
+
+  function updateCmpBar(){
+    var bar   = document.getElementById('cmp-bar');
+    var label = document.getElementById('cmp-label');
+    var goBtn = document.getElementById('cmp-go');
+    if(cmpSelected.length === 0){
+      bar.classList.remove('active');
+    } else {
+      bar.classList.add('active');
+      if(cmpSelected.length === 1){
+        label.textContent = '"' + cmpSelected[0].querySelector('.rn').textContent + '" selected — pick one more';
+        goBtn.disabled = true;
+      } else {
+        label.textContent = cmpSelected[0].querySelector('.rn').textContent + ' vs ' + cmpSelected[1].querySelector('.rn').textContent;
+        goBtn.disabled = false;
+      }
+    }
+  }
+
+  document.getElementById('cmp-clear').addEventListener('click', function(){
+    cmpSelected.forEach(function(c){
+      c.classList.remove('cmp-on');
+      var b = c.querySelector('.cmpbtn');
+      if(b) b.textContent = '+ Compare';
+    });
+    cmpSelected = [];
+    updateCmpBar();
+  });
+
+  document.getElementById('cmp-go').addEventListener('click', function(){
+    if(cmpSelected.length < 2) return;
+    renderCompare(cmpSelected[0], cmpSelected[1]);
+    document.getElementById('cmp-overlay').classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+
+  document.getElementById('cmp-close').addEventListener('click', function(){
+    document.getElementById('cmp-overlay').classList.remove('active');
+  });
+
+  function getApps(card){
+    var map = {};
+    var order = [];
+    card.querySelectorAll('.arow').forEach(function(row){
+      var name   = row.querySelector('.an').textContent.trim();
+      var detail = row.querySelector('.ad').textContent.trim();
+      if(!map[name]){ order.push(name); }
+      map[name] = detail;
+    });
+    return {map:map, order:order};
+  }
+
+  function renderCompare(c1, c2){
+    var pid1 = c1.querySelector('.pid').textContent;
+    var rn1  = c1.querySelector('.rn').textContent;
+    var pid2 = c2.querySelector('.pid').textContent;
+    var rn2  = c2.querySelector('.rn').textContent;
+    document.getElementById('cmp-legend-left').textContent  = 'Only in ' + rn1;
+    document.getElementById('cmp-legend-right').textContent = 'Only in ' + rn2;
+    var a1 = getApps(c1), a2 = getApps(c2);
+    // Union of all apps, preserving c1 order then c2 extras
+    var seen = {}, allApps = [];
+    a1.order.forEach(function(n){ if(!seen[n]){ seen[n]=1; allApps.push(n); } });
+    a2.order.forEach(function(n){ if(!seen[n]){ seen[n]=1; allApps.push(n); } });
+    // Build table
+    var html = '<thead><tr>'
+      + '<th style="width:180px">App</th>'
+      + '<th class="cmp-th-role"><div class="cmp-pid">' + pid1 + '</div>' + rn1 + '</th>'
+      + '<th class="cmp-th-role"><div class="cmp-pid">' + pid2 + '</div>' + rn2 + '</th>'
+      + '</tr></thead><tbody>';
+    allApps.forEach(function(name){
+      var d1 = a1.map[name], d2 = a2.map[name];
+      var cls = (d1 && d2) ? '' : (!d2 ? 'only-left' : 'only-right');
+      html += '<tr class="' + cls + '">'
+        + '<td class="app-name">' + name + '</td>'
+        + '<td>' + (d1 || '<span class="missing">—</span>') + '</td>'
+        + '<td>' + (d2 || '<span class="missing">—</span>') + '</td>'
+        + '</tr>';
+    });
+    html += '</tbody>';
+    document.getElementById('cmp-tbl').innerHTML = html;
+  }
+})();
+</script>
+</body>
+</html>
