@@ -5,31 +5,30 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Sonos · External User Onboarding</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-:root{--black:#111;--white:#fff;--g50:#f8f8f6;--g100:#efefed;--g200:#ddddd9;--g400:#9a9a94;--g600:#5a5a55;--accent:#e8480a;--asoft:#fdf0eb;--r:10px;--sh:0 2px 16px rgba(0,0,0,.09);}
+:root{--black:#111;--white:#fff;--bg:#f4f4f4;--g50:#f7f7f7;--g100:#e8e8e8;--g200:#d0d0d0;--g400:#888;--g600:#444;--accent:#e8480a;--asoft:#fdf0eb;--r:6px;--sh:0 2px 12px rgba(0,0,0,.08);}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--g50);color:var(--black);}
-header{background:var(--black);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
-.logo{font-weight:700;font-size:20px;color:#fff;letter-spacing:-.5px;}
-.logo-sub{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--g400);border-left:1px solid #333;padding-left:12px;margin-left:12px;}
-.okta{display:flex;align-items:center;gap:7px;background:#1a1a1a;border:1px solid #2e2e2e;border-radius:6px;padding:5px 11px;font-size:12px;color:var(--g400);}
+body{font-family:'Aktiv Grotesk','Helvetica Neue',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--g600);}
+header{background:#000;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Aktiv Grotesk','Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:1.8rem;color:#fff;letter-spacing:.25rem;text-transform:uppercase;}
+.logo-sub{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:#aaa;border-left:1px solid #333;padding-left:12px;margin-left:12px;}
+.okta{display:flex;align-items:center;gap:7px;background:#1a1a1a;border:1px solid #2e2e2e;border-radius:4px;padding:5px 11px;font-size:12px;color:#aaa;}
 .okta-dot{width:7px;height:7px;border-radius:50%;background:#00d1b2;}
-.hero{background:var(--black);padding:48px 32px 44px;border-bottom:1px solid #222;text-align:center;}
+.hero{background:#000;padding:48px 32px 44px;border-bottom:1px solid #222;text-align:center;}
 .hero h1{font-size:clamp(24px,4vw,38px);font-weight:300;color:#fff;letter-spacing:-.02em;line-height:1.15;}
 .hero h1 strong{font-weight:700;color:var(--accent);}
-.hero p{margin-top:10px;font-size:14px;color:var(--g400);max-width:500px;line-height:1.65;margin-left:auto;margin-right:auto;}
+.hero p{margin-top:10px;font-size:14px;color:#aaa;max-width:500px;line-height:1.65;margin-left:auto;margin-right:auto;}
 .stats{display:flex;gap:24px;margin-top:24px;justify-content:center;}
 .stat .n{font-size:26px;font-weight:700;color:#fff;}
 .stat .l{font-size:11px;color:var(--g400);text-transform:uppercase;letter-spacing:.06em;margin-top:3px;}
 /* SCREENS */
-.screen{display:none;padding:60px 32px;flex-direction:column;align-items:center;background:var(--g50);}
+.screen{display:none;padding:60px 32px;flex-direction:column;align-items:center;background:var(--bg);}
 .screen.active{display:flex;}
-.screen h2{font-size:22px;font-weight:600;margin-bottom:8px;text-align:center;}
+.screen h2{font-size:22px;font-weight:600;margin-bottom:8px;text-align:center;color:var(--black);}
 .screen p{font-size:14px;color:var(--g400);margin-bottom:36px;text-align:center;}
 .picker{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;width:100%;max-width:900px;margin:0 auto;}
 .pick{width:200px;}
 .pick{background:#fff;border:1.5px solid var(--g200);border-radius:var(--r);padding:28px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:all .2s;font-family:inherit;text-align:center;}
-.pick:hover{border-color:var(--accent);box-shadow:var(--sh);transform:translateY(-2px);}
+.pick:hover{border-color:var(--black);box-shadow:var(--sh);transform:translateY(-2px);}
 .pick-icon{font-size:30px;}
 .pick-name{font-size:14px;font-weight:600;color:var(--black);}
 .pick-count{font-size:12px;color:var(--g400);}
@@ -40,15 +39,14 @@ header{background:var(--black);padding:0 32px;display:flex;align-items:center;ju
 .nav-btn:hover{color:var(--black);}
 .nav-sep{color:var(--g200);}
 .nav-cur{font-size:13px;font-weight:600;color:var(--black);}
-/* SEARCH */
-.searchbar{display:none;gap:10px;align-items:center;padding:14px 32px;background:#fff;border-bottom:1px solid var(--g200);}
+/* QUICK JUMP BAR */
+.searchbar{display:none;align-items:center;justify-content:space-between;padding:10px 32px;background:#fff;border-bottom:1px solid var(--g200);gap:16px;flex-wrap:wrap;}
 .searchbar.active{display:flex;}
-.sw{position:relative;flex:1;min-width:180px;max-width:300px;}
-.sw svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--g400);}
-.si{width:100%;padding:8px 12px 8px 32px;border:1.5px solid var(--g200);border-radius:100px;font-size:13px;font-family:inherit;background:var(--g50);outline:none;color:var(--black);}
-.si:focus{border-color:var(--black);background:#fff;}
-.si::placeholder{color:var(--g400);}
-.rc{margin-left:auto;font-size:12px;color:var(--g400);font-weight:500;}
+.jumps{display:flex;gap:8px;flex-wrap:wrap;}
+.jump{padding:5px 14px;border-radius:100px;border:1.5px solid var(--g200);background:transparent;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--g600);transition:all .15s;white-space:nowrap;}
+.jump:hover{border-color:var(--black);color:var(--black);}
+.jump.jump-active{background:var(--black);color:#fff;border-color:var(--black);}
+.rc{font-size:12px;color:var(--g400);font-weight:500;white-space:nowrap;}
 /* ROLES */
 .rolesview{display:none;max-width:1160px;margin:0 auto;padding:32px 32px 80px;}
 .rolesview.active{display:block;}
@@ -83,7 +81,7 @@ header{background:var(--black);padding:0 32px;display:flex;align-items:center;ju
 .arow{display:flex;align-items:flex-start;gap:10px;padding:9px 20px;border-bottom:1px solid var(--g100);}
 .arow:last-child{border-bottom:none;}
 .arow:hover{background:var(--g50);}
-.adot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:5px;}
+.adot{width:7px;height:7px;border-radius:50%;background:#bbb;flex-shrink:0;margin-top:5px;}
 .an{font-size:13px;font-weight:600;min-width:160px;}
 .ad{font-size:12px;color:var(--g400);line-height:1.5;}
 .cfoot{padding:11px 20px;border-top:1px solid var(--g100);display:flex;gap:8px;}
@@ -94,7 +92,7 @@ header{background:var(--black);padding:0 32px;display:flex;align-items:center;ju
 .card.cmp-on{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,90,31,.12);}
 .card.cmp-on .cmpbtn{background:var(--accent);color:#fff;border-color:var(--accent);}
 /* COMPARE BAR */
-.cmp-bar{position:fixed;bottom:0;left:0;right:0;background:var(--black);color:#fff;padding:14px 28px;display:flex;align-items:center;justify-content:center;gap:16px;transform:translateY(100%);transition:transform .25s;z-index:200;font-size:13px;}
+.cmp-bar{position:fixed;bottom:0;left:0;right:0;background:#111;color:#fff;padding:14px 28px;display:flex;align-items:center;justify-content:center;gap:16px;transform:translateY(100%);transition:transform .25s;z-index:200;font-size:13px;}
 .cmp-bar.active{transform:translateY(0);}
 .cmp-bar-label{flex:1;max-width:500px;text-align:center;opacity:.8;}
 .cmp-bar-go{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 22px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
@@ -103,7 +101,7 @@ header{background:var(--black);padding:0 32px;display:flex;align-items:center;ju
 /* COMPARE MODAL */
 .cmp-overlay{display:none;position:fixed;inset:0;background:#fff;z-index:300;overflow-y:auto;}
 .cmp-overlay.active{display:block;}
-.cmp-hd{background:var(--black);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1;}
+.cmp-hd{background:#111;padding:20px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1;}
 .cmp-hd h2{color:#fff;font-size:16px;font-weight:600;}
 .cmp-close{background:transparent;border:1.5px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:7px 18px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;}
 .cmp-body{padding:32px;max-width:1100px;margin:0 auto;}
@@ -125,9 +123,18 @@ header{background:var(--black);padding:0 32px;display:flex;align-items:center;ju
 .cmp-dot-left{background:#ffede4;}
 .cmp-dot-right{background:#e8eeff;}
 .empty{display:none;grid-column:1/-1;text-align:center;padding:56px 20px;color:var(--g400);font-size:14px;}
+/* FAQ */
+.faq-section{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g400);margin:28px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--g200);}
+.faq-section:first-child{margin-top:0;}
+.faq-item{border:1px solid var(--g200);border-radius:var(--r);margin-bottom:10px;overflow:hidden;background:#fff;}
+.faq-q{padding:14px 18px;font-size:13px;font-weight:600;color:var(--black);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.faq-q::after{content:'▼';font-size:9px;color:var(--g400);transition:transform .2s;flex-shrink:0;}
+.faq-item.faq-open .faq-q::after{transform:rotate(180deg);}
+.faq-a{display:none;padding:0 18px 14px;font-size:13px;color:var(--g600);line-height:1.65;border-top:1px solid var(--g100);}
+.faq-item.faq-open .faq-a{display:block;}
 /* HOW TO */
 .howto{background:#fff;border:1.5px solid var(--g200);border-radius:var(--r);overflow:hidden;margin-bottom:28px;}
-.howto-hd{background:var(--black);padding:18px 22px;text-align:center;}
+.howto-hd{background:#111;padding:18px 22px;text-align:center;}
 .howto-hd h2{font-size:15px;font-weight:600;color:#fff;}
 .steps{display:flex;flex-wrap:wrap;justify-content:center;}
 .step{padding:18px 22px;border-right:1px solid var(--g100);border-bottom:1px solid var(--g100);min-width:210px;flex:1;}
@@ -144,8 +151,8 @@ a.hcard:hover{border-color:#aaa;box-shadow:var(--sh);transform:translateY(-2px);
 .hbody strong{color:var(--black);}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--black);color:#fff;padding:9px 20px;border-radius:100px;font-size:13px;font-weight:500;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999;}
 .toast.show{opacity:1;}
-footer{background:var(--black);color:var(--g400);text-align:center;font-size:12px;padding:24px 32px;}
-footer a{color:var(--accent);text-decoration:none;}
+footer{background:#111;color:#aaa;text-align:center;font-size:12px;padding:24px 32px;}
+footer a{color:#fff;text-decoration:none;}
 </style>
 </head>
 <body>
@@ -179,6 +186,9 @@ footer a{color:var(--accent);text-decoration:none;}
     </button>
     <button class="pick" data-action="product-picker">
       <span class="pick-icon">📦</span><span class="pick-name">Product</span><span class="pick-count">3 sub-teams</span>
+    </button>
+    <button class="pick" data-action="faq-picker">
+      <span class="pick-icon">💬</span><span class="pick-name">FAQ</span><span class="pick-count">Onboarding & setup</span>
     </button>
   </div>
 </div>
@@ -231,6 +241,66 @@ footer a{color:var(--accent);text-decoration:none;}
     <button class="pick" data-action="org" data-org="SW-JDM-Above"><span class="pick-icon">🌐</span><span class="pick-name">Above.se</span><span class="pick-count">1 profile</span></button>
   </div>
 </div>
+<!-- SCREEN: FAQ -->
+<div class="screen" id="s-faq">
+  <div style="width:100%;max-width:760px;">
+    <h2 style="margin-bottom:6px;">FAQ — Onboarding & Role Guide Setup</h2>
+    <p style="margin-bottom:32px;">Common questions from hiring managers about external user access at Sonos.</p>
+
+    <div class="faq-section">Access, Permissions & Role Guide Setup</div>
+
+    <div class="faq-item">
+      <div class="faq-q">What systems and applications does the new resource need access to?</div>
+      <div class="faq-a">Collaborate with the hiring manager to determine role-specific requirements. Third-party specialists do not start with any base level of access — Slack, Zoom, and Google Workspace are not provided by default unless specifically requested. Referring to a similar FTE's account can provide a helpful starting point. IT Ops is available to assist in reviewing specific accounts to identify essential applications.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What level of access is required for each system?</div>
+      <div class="faq-a">Specify whether read-only, edit, or administrator access is needed for each system. Avoid over-provisioning. For Confluence and Jira, specify the exact spaces and projects the resource needs for proper setup on Day 1.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Are there any application licensing constraints?</div>
+      <div class="faq-a">Occasionally, yes. IT Ops will collaborate with the application team to determine if a large-scale onboarding of third-party resources can be supported. This will be communicated during the role guide setup process.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How are access requests processed and approved?</div>
+      <div class="faq-a">We aim to provide access by Day 1, but some applications require individual approval. For example, while IT Ops provides the Okta tile for SAP, the ERP team directly manages SAP permissions — this may take an additional day. IT Ops will facilitate these approval processes.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">The resource needs email but not all Google Workspace tools — is that possible?</div>
+      <div class="faq-a">Unfortunately, no. Google Workspace is all-or-nothing. Provisioning a license grants access to the full suite. Be mindful of the security implications — especially around Google Drive — when deciding whether to include Workspace in the profile.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How often are access permissions reviewed and updated?</div>
+      <div class="faq-a">Role guides are reviewed quarterly to ensure ongoing accuracy. All external access is also reviewed quarterly — hiring managers will be notified when action is required.</div>
+    </div>
+
+    <div class="faq-section">Hardware & Equipment</div>
+
+    <div class="faq-item">
+      <div class="faq-q">What hardware will the new resource receive?</div>
+      <div class="faq-a">Generally, Sonos does not provide physical hardware (laptop, desktop, mobile device) to third-party specialists. Hardware is typically the responsibility of the vendor or agency.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Do we provide any Virtual Desktop Infrastructure (VDI) solutions?</div>
+      <div class="faq-a">Yes. Depending on work requirements, we offer two VDI options:<br><br><strong>Microsoft CloudPC</strong> — Windows-based<br><strong>Amazon Workspaces</strong> — Linux-based</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How does the resource connect to the company network?</div>
+      <div class="faq-a">Third-party specialists do not have access to the traditional Sonos VPN. Network access is provided through the VDI tool (CloudPC or AWS Workspaces), which includes a direct connection to Sonos systems.</div>
+    </div>
+
+    <div class="faq-section">Accounts & Credentials</div>
+
+    <div class="faq-item">
+      <div class="faq-q">How are user accounts created and managed?</div>
+      <div class="faq-a">Once a New Prep Request is submitted in Workday, our automated system creates the account in Okta. This takes approximately 3 hours and can only happen after the prep request is submitted — timely submission is essential for Day 1 access.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How are login credentials provided to the new resource?</div>
+      <div class="faq-a">Once the account is ready, IT Ops will contact the hiring manager listed on the prep request (typically the person who submitted it in Backstage). Note: prep requests must be submitted by an internal Sonos employee.</div>
+    </div>
+  </div>
+</div>
 <!-- NAV BAR -->
 <div class="nav" id="nav">
   <button class="nav-btn" id="nav-back">
@@ -240,11 +310,14 @@ footer a{color:var(--accent);text-decoration:none;}
   <span class="nav-sep">|</span>
   <span class="nav-cur" id="nav-cur"></span>
 </div>
-<!-- SEARCH BAR -->
+<!-- QUICK JUMP BAR -->
 <div class="searchbar" id="searchbar">
-  <div class="sw">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input class="si" id="si" placeholder="Search role or app…"/>
+  <div class="jumps">
+    <button class="jump" data-jump-org="Finance">Finance</button>
+    <button class="jump" data-jump-org="HR">HR</button>
+    <button class="jump" data-jump-picker="it">Information Technology</button>
+    <button class="jump" data-jump-picker="sw">Software</button>
+    <button class="jump" data-jump-picker="product">Product</button>
   </div>
   <span class="rc" id="rc"></span>
 </div>
@@ -967,7 +1040,7 @@ footer a{color:var(--accent);text-decoration:none;}
 (function(){
   var curOrg = null;
   function show(screenId){
-    ['s-org','s-it','s-sw','s-product','s-jdm'].forEach(function(id){
+    ['s-org','s-it','s-sw','s-product','s-jdm','s-faq'].forEach(function(id){
       var el = document.getElementById(id);
       el.classList.remove('active');
     });
@@ -998,6 +1071,12 @@ footer a{color:var(--accent);text-decoration:none;}
       document.getElementById('nav-back-label').textContent = 'Change team';
       document.getElementById('nav-cur').textContent = 'Product';
       curOrg = 'PROD';
+    } else if(screenId === 'faq'){
+      document.getElementById('s-faq').classList.add('active');
+      nav.classList.add('active');
+      document.getElementById('nav-back-label').textContent = 'Change team';
+      document.getElementById('nav-cur').textContent = 'FAQ';
+      curOrg = null;
     } else if(screenId === 'jdm'){
       document.getElementById('s-jdm').classList.add('active');
       nav.classList.add('active');
@@ -1016,9 +1095,9 @@ footer a{color:var(--accent);text-decoration:none;}
     var backLabel = org.startsWith('IT-') ? 'Back to IT sub-teams' : org.startsWith('SW-JDM-') ? 'Back to JDM Partners' : org.startsWith('SW-') ? 'Back to Software sub-teams' : org.startsWith('PROD-') ? 'Back to Product sub-teams' : 'Change team';
     document.getElementById('nav-back-label').textContent = backLabel;
     document.getElementById('nav-cur').textContent = label;
-    document.getElementById('si').value = '';
     show('roles');
     filterCards(org, '');
+    updateJumpActive();
     window.scrollTo({top:0,behavior:'smooth'});
   }
   // Org picker buttons
@@ -1032,6 +1111,9 @@ footer a{color:var(--accent);text-decoration:none;}
         window.scrollTo({top:0,behavior:'smooth'});
       } else if(action === 'sw-picker'){
         show('sw');
+        window.scrollTo({top:0,behavior:'smooth'});
+      } else if(action === 'faq-picker'){
+        show('faq');
         window.scrollTo({top:0,behavior:'smooth'});
       } else if(action === 'product-picker'){
         show('product');
@@ -1061,18 +1143,34 @@ footer a{color:var(--accent);text-decoration:none;}
     }
     window.scrollTo({top:0,behavior:'smooth'});
   });
-  // Search
-  document.getElementById('si').addEventListener('input', function(){
-    filterCards(curOrg, this.value.toLowerCase().trim());
+  // Quick jump buttons
+  function updateJumpActive(){
+    document.querySelectorAll('.jump').forEach(function(btn){
+      var org    = btn.dataset.jumpOrg;
+      var picker = btn.dataset.jumpPicker;
+      var active = false;
+      if(org)    active = curOrg === org;
+      if(picker === 'it')      active = curOrg && curOrg.startsWith('IT-');
+      if(picker === 'sw')      active = curOrg && curOrg.startsWith('SW-') && !curOrg.startsWith('SW-JDM');
+      if(picker === 'product') active = curOrg === 'JDM' || (curOrg && (curOrg.startsWith('SW-JDM') || curOrg.startsWith('PROD-')));
+      btn.classList.toggle('jump-active', !!active);
+    });
+  }
+  document.querySelectorAll('.jump').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var org    = this.dataset.jumpOrg;
+      var picker = this.dataset.jumpPicker;
+      if(org)    showRoles(org, this.textContent.trim());
+      if(picker) { show(picker); window.scrollTo({top:0,behavior:'smooth'}); }
+    });
   });
   function filterCards(org, q){
     var cards = document.querySelectorAll('.card[data-org]');
     var n = 0;
     cards.forEach(function(c){
-      var orgOk    = !org || c.dataset.org === org;
-      var searchOk = !q   || c.dataset.s.includes(q) || c.querySelector('.rn').textContent.toLowerCase().includes(q);
-      if(orgOk && searchOk){ c.classList.remove('hidden'); n++; }
-      else                  { c.classList.add('hidden'); }
+      var orgOk = !org || c.dataset.org === org;
+      if(orgOk){ c.classList.remove('hidden'); n++; }
+      else     { c.classList.add('hidden'); }
     });
     document.getElementById('rc').textContent = n + ' profile' + (n !== 1 ? 's' : '');
     document.getElementById('heroCount').textContent = n;
@@ -1140,6 +1238,12 @@ footer a{color:var(--accent);text-decoration:none;}
       }
     });
   }
+  // FAQ accordion
+  document.querySelectorAll('.faq-q').forEach(function(q){
+    q.addEventListener('click', function(){
+      this.closest('.faq-item').classList.toggle('faq-open');
+    });
+  });
   // Init
   show('org');
 
